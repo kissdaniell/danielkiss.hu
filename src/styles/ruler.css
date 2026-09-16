@@ -1,0 +1,253 @@
+.hero-rulers {
+  position: fixed;
+  /* inset alone, and deliberately no width/height beside it. `100vw` is the
+     viewport *including* the scrollbar gutter, and this page reserves one
+     (scrollbar-gutter: stable, in main.css) — so a fixed box that wide
+     overhangs the content area by the width of the bar and gives the
+     document a horizontal scrollbar of its own. inset: 0 already resolves
+     to exactly the right box. */
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 9998;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.hero-rulers.is-ready {
+  opacity: 1;
+}
+
+/* Both rulers carry layout containment, and the left one earns it: its marks
+   count document position, so ruler.js rewrites a dozen of their textContents
+   on every scrolled frame. Each of those writes invalidates layout, and
+   without containment the invalidation is the whole document's — which is
+   what the next thing to ask for a geometry reading then has to pay for.
+   Contained, the relayout stops at this box.
+
+   Layout only, not paint: the marks are translated onto their own centre and
+   their labels run wider than the 3rem column, and paint containment would
+   clip them. */
+.ruler-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1.75rem;
+  contain: layout;
+}
+
+.ruler-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 3rem;
+  contain: layout;
+}
+
+.ruler-mark {
+  position: absolute;
+  transform: translateX(-50%);
+  color: #fff;
+  opacity: 0.2;
+  font-size: 0.472rem;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+}
+
+.ruler-left .ruler-mark {
+  transform: translateY(-50%);
+}
+
+.ruler-mark::before {
+  content: "";
+  position: absolute;
+  background: #fff;
+  opacity: 0.55;
+}
+
+.ruler-tick {
+  position: absolute;
+  opacity: 0.12;
+  background: #fff;
+}
+
+.ruler-top .ruler-tick {
+  width: 1px;
+  height: 0.425rem;
+  top: 0;
+}
+
+.ruler-left .ruler-tick {
+  width: 0.425rem;
+  height: 1px;
+  left: 0;
+}
+
+/* No `transition: transform` on these, and it matters more than it sounds.
+   ruler.js already eases them with a GSAP tween, so a transition here was a
+   second animator on the same property — but the visible symptom was worse
+   than the doubled lag.
+
+   CSS only interpolates two transforms function-by-function when both sides
+   list the same functions in the same order. The stylesheet's resting pose is
+   `translateY(-50%) rotate(-90deg)`; what GSAP writes is
+   `translate(0%, -50%) translate(0px, Ypx) rotate(-90deg)`, and it switches
+   between translate() and translate3d() as a tween starts and ends. Every one
+   of those is a different list, so the browser fell back to interpolating the
+   two *matrices* — which means decomposing both into a rotation and easing
+   between the two angles. A quarter turn decomposes to -90 or +270 depending
+   on which side of the branch each endpoint lands, and when the two disagreed
+   the marker spent 80ms rotating the long way round. That is the arrow that
+   occasionally showed up pointing somewhere other than left. */
+.ruler-cursor-x,
+.ruler-cursor-y {
+  color: var(--color-accent);
+  font-size: 0.66rem;
+  line-height: 1;
+  background: none;
+  opacity: 0.55;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.ruler-cursor-x {
+  width: 2px;
+  height: 0.755rem;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.ruler-cursor-y {
+  width: 0.944rem;
+  height: 2px;
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: left center;
+  left: 0;
+}
+
+.hero-rulers.dark-x .ruler-top,
+.hero-rulers.dark-x .ruler-top .ruler-mark,
+.hero-rulers.dark-x .ruler-top .ruler-tick {
+  color: var(--color-text);
+}
+
+.hero-rulers.dark-x .ruler-top .ruler-mark::before,
+.hero-rulers.dark-x .ruler-top .ruler-tick {
+  background: var(--color-text);
+}
+
+.hero-rulers.dark-y .ruler-left,
+.hero-rulers.dark-y .ruler-left .ruler-mark,
+.hero-rulers.dark-y .ruler-left .ruler-tick {
+  color: var(--color-text);
+}
+
+.hero-rulers.dark-y .ruler-left .ruler-mark::before,
+.hero-rulers.dark-y .ruler-left .ruler-tick {
+  background: var(--color-text);
+}
+
+.hero-rulers.dark-x .ruler-top .ruler-mark,
+.hero-rulers.dark-y .ruler-left .ruler-mark {
+  opacity: 0.35;
+}
+
+.hero-rulers.dark-x .ruler-top .ruler-mark::before,
+.hero-rulers.dark-y .ruler-left .ruler-mark::before {
+  opacity: 0.8;
+}
+
+.hero-rulers.dark-x .ruler-top .ruler-tick,
+.hero-rulers.dark-y .ruler-left .ruler-tick {
+  opacity: 0.22;
+}
+
+.ruler-mark,
+.ruler-mark::before,
+.ruler-tick {
+  transition:
+    color 0.33s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.33s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.33s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ruler-mark.dark {
+  color: var(--color-text);
+}
+
+.ruler-mark.dark::before {
+  background: var(--color-text);
+}
+
+.ruler-tick.dark {
+  background: var(--color-text);
+}
+
+.fixed-datas {
+  position: fixed;
+  right: 1.7rem;
+  /* Held higher than it used to be: the readout gained a fourth, longer
+     field (the section name), and this panel is rotated about its own
+     bottom-right corner — so it grows upward from wherever this puts it,
+     and starting lower left the whole column pressed into the page's
+     bottom edge. */
+  bottom: 5.5rem;
+  z-index: 10;
+  rotate: 90deg;
+  transform-origin: bottom right;
+  color: var(--color-light);
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  opacity: 0;
+  transition: color 0.5s ease, opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.fixed-datas.is-ready {
+  opacity: 1;
+}
+
+.fixed-datas.dark {
+  color: var(--color-text);
+}
+
+.fixed-datas span {
+  display: inline-block;
+  width: 6ch;
+  font-size: 0.655rem;
+  text-transform: uppercase;
+  margin: 0 0.311rem;
+  letter-spacing: 0.0755rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Holds a word rather than a number, and a longer one than the 7ch slot the
+   readouts share — but still a fixed slot, wide enough for the longest
+   section name there is. Letting it shrink-wrap would have been the obvious
+   thing and is wrong: this panel is anchored by its bottom-right corner, so
+   a shorter name doesn't pull its own end in, it drags the entire column
+   down. text-align keeps the word itself pinned to that anchored end, so
+   the slack from a short name falls between the fields instead of leaving
+   the readout floating off the bottom. */
+.fixed-datas span.fixed-datas-section {
+  width: 12ch;
+    text-align: left;
+    padding-left: 1ch;
+}
+
+
+/* Not upright, at all.
+   ---------------------------------------------------------------
+   The readout names the pointer's own position, which is a thing only a
+   pointer has: upright the page is being touched rather than aimed at, and
+   three of its four fields have nothing to report. It was also hung down the
+   right-hand edge — the edge the sidebar used to occupy and the content now
+   does — so what it mostly did there was stand in front of the page.
+   Withdrawn entirely below 4:3; above it, exactly as it was. */
+@media (aspect-ratio < 4/3) {
+  .fixed-datas {
+    display: none;
+  }
+}

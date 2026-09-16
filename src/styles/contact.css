@@ -1,0 +1,425 @@
+/* Contact — the page's last frame, and the only full-bleed one. By the time
+   the reader arrives the sidebar has scattered (see contact.js), so the
+   column .section reserves for it on every other section is given back here
+   and the draggable field takes the whole viewport. */
+.contact {
+  position: relative;
+  /* svh, not vh: on a phone `vh` is the viewport with the address bar
+     hidden, so a box one `100vh` tall has its last band below the fold for
+     as long as the bar is up — which is the whole time the reader is first
+     looking at it. `svh` is the same measure taken with the bar shown. It
+     resolves identically to `vh` anywhere without a retracting toolbar, so
+     the wide layout is untouched. (No `vh` fallback line: the minifier drops
+     it as redundant for the browsers this is built for, which all have svh.) */
+  height: 100svh;
+  overflow: hidden;
+  display: block;
+  padding: 0;
+  /* This section is what the reader actually presses on to drag the field:
+     the field is fixed *behind* #smooth-wrapper and nothing behind that is
+     hit-testable, so Draggable takes this as its trigger and moves the grid
+     underneath. Hence the grab cursor living here rather than there. */
+  cursor: grab;
+}
+
+.contact.is-dragging {
+  cursor: grabbing;
+}
+
+/* Fixed to the viewport rather than to the closing section, so the
+   photographs can be seen falling into place while the transition above is
+   still on screen. It sits behind everything in #smooth-wrapper (same
+   z-index, earlier in the DOM), which is exactly right: the transition's
+   copy and the closing section's two panels all read over it.
+
+   Purely a visual layer — it never takes the pointer. Being behind the
+   smooth wrapper it could not usefully anyway: hit-testing would always
+   land on the wrapper first. The press that drags it happens on #contact
+   instead (see the trigger in contact.js).
+
+   Nothing gates its visibility: the tiles themselves start at opacity 0 and
+   only appear as they fall. */
+.contact-field {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Laid out as a plain grid. The column count, tile size and gap all arrive
+   as custom properties from contact.js, which sizes the field to overflow
+   the viewport in both directions by enough that there is always somewhere
+   left to drag to. The fallbacks below are what those work out to at the
+   reference viewport. */
+.contact-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--contact-cols, 8), var(--contact-tile, 13rem));
+  grid-auto-rows: var(--contact-tile, 13rem);
+  gap: var(--contact-gap, 0.5rem);
+  will-change: transform;
+}
+
+/* Darkens the field toward its edges — the sides most of all — so the wall
+   of photographs falls away into the page instead of ending at the frame.
+   Painted over the grid (same stacking context, later in the DOM) but under
+   everything in #smooth-wrapper, which is where the two panels live. */
+.contact-field::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0) 26%, rgba(0, 0, 0, 0) 74%, rgba(0, 0, 0, 0.92)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0) 28%, rgba(0, 0, 0, 0) 72%, rgba(0, 0, 0, 0.8));
+}
+
+.contact-tile {
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The field is a texture to push around, not a gallery to inspect: held
+     back so the two panels over it stay the thing being read. */
+  filter: brightness(0.62) saturate(0.85);
+  /* Dragging an image is the browser's own gesture and would fight
+     Draggable's for the same pointer. */
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Both panels below hold the page's own background against the field running
+   underneath them — neither is readable with photographs sliding past behind
+   it — but they hold it as a gradient that gives out before the edge rather
+   than as a rectangle stamped over the grid. Which is why both carry far more
+   padding than their contents need: that margin is where the fade lives.
+
+   pointer-events stays off so a drag started on top of one still moves the
+   field — only the email itself takes the pointer back. */
+/* Centred with inset:0 + margin:auto rather than left/top 50% and a
+   translate. Two reasons: the offsets version caps an absolutely positioned
+   box's shrink-to-fit width at the half of the section left over, and its
+   centring lives in the same transform property that contact.js animates for
+   the entrance — one is a layout trap, the other a collision waiting to
+   happen. This way the box is centred by layout and the transform is free. */
+.contact-card {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: max-content;
+  height: max-content;
+  max-width: calc(100% - 4rem);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Wider than it looks: the heading's marker underline hangs about 1.26rem
+     (0.3em of a 4.2rem line) below the heading's own box, so most of this is
+     spent clearing that before any visible gap opens at all. */
+  gap: clamp(2.8rem, 5.5vh, 4.4rem);
+  /* The margin the fade lives in, named because the mask below is written
+     off it rather than off a share of the finished box. A percentage ramp
+     only lands inside this padding for as long as the box keeps the
+     proportions it was tuned at, and it does not: the padding's own terms
+     are vh and vw while everything it wraps is rem, so a window a little
+     taller than the reference shortens the padding and lengthens the ramp
+     at the same time. Stated as a length, the fade finishes exactly where
+     the first letter starts at every viewport, and can be as long as that
+     leaves room for. */
+  --card-fade-y: clamp(4.2rem, 12vh, 7.2rem);
+  --card-fade-x: clamp(6rem, 12vw, 10.6rem);
+  padding: var(--card-fade-y) var(--card-fade-x);
+  text-align: center;
+  pointer-events: none;
+}
+
+/* The panel's ground, as its own layer behind the type. A radial gradient
+   started giving out at the centre, which left a soft blob rather than a
+   panel; this is solid all the way out and only lets go at the very edges.
+   On a pseudo-element rather than the box itself because the fade is a mask,
+   and a mask on the box would take the words with it. */
+.contact-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-bg);
+  /* The full width of the panel's own padding, less a hair so the ground is
+     unambiguously solid where the type begins rather than only just. Longer
+     than the ramp this carried before on every viewport, and the reason to
+     lengthen it: the panel is holding a moving field of photographs off the
+     type, and a fade that reached solid too early left an edge the eye could
+     find — which reads as a rectangle stamped over the grid, the one thing
+     this is not meant to be. */
+  --ramp-x: calc(var(--card-fade-x) - 0.5rem);
+  --ramp-y: calc(var(--card-fade-y) - 0.5rem);
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent, #000 var(--ramp-x), #000 calc(100% - var(--ramp-x)), transparent),
+    linear-gradient(180deg, transparent, #000 var(--ramp-y), #000 calc(100% - var(--ramp-y)), transparent);
+  mask-image:
+    linear-gradient(90deg, transparent, #000 var(--ramp-x), #000 calc(100% - var(--ramp-x)), transparent),
+    linear-gradient(180deg, transparent, #000 var(--ramp-y), #000 calc(100% - var(--ramp-y)), transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* One line, and smaller than the section headings above it for that reason:
+   the whole address has to sit across a single row inside a panel that fades
+   out well before the frame does. */
+.contact-heading {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: center;
+  column-gap: 0.3em;
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 4.2rem;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  padding: 1rem;
+}
+
+.contact-heading-line {
+  display: inline-block;
+}
+
+.contact-heading-line--light {
+  color: var(--color-light);
+}
+
+.contact-heading-line--accent {
+  color: var(--color-accent);
+}
+
+.contact-heading-line-wrap {
+  position: relative;
+  display: inline-block;
+  perspective: 500px;
+}
+
+.contact-heading-underline {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  height: 0.3em;
+  overflow: visible;
+}
+
+.contact-heading-underline-stroke {
+  fill: none;
+  stroke: var(--color-light);
+  stroke-width: 10;
+  stroke-linecap: round;
+  filter: url(#markerRough);
+  animation: hero-underline-glitch 2.4s steps(1, jump-end) infinite;
+}
+
+.contact-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+/* The quiet line the rest of the page uses for its footnotes — the sidebar's
+   "INDEX — PORTFOLIO / 2026", the skills panel's own caption. */
+.contact-availability {
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: color-mix(in srgb, var(--color-light) 60%, transparent);
+  padding: 1rem 0 2rem;
+}
+
+.contact-email {
+  position: relative;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7em 1.4em;
+  border: 1px solid rgba(236, 231, 220, 0.28);
+  background: rgba(236, 231, 220, 0.04);
+  cursor: pointer;
+  overflow: hidden;
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  font-size: 1.35rem;
+  letter-spacing: 0.06em;
+  color: var(--color-light);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.contact-email:hover {
+  border-color: var(--color-accent);
+  background: rgba(255, 50, 29, 0.08);
+}
+
+.contact-email-copied {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-accent);
+  /* Light scrawl on the accent plate rather than the button's own Satoshi in
+     the background colour: the confirmation is a scribbled "got it", not a
+     second label. Smaller than the address it covers, and the button's own
+     letterspacing reset — this face doesn't want it. */
+  font-family: "Higher Jump", var(--font-secondary);
+  font-weight: 400;
+  font-size: 1rem;
+  letter-spacing: 0;
+  color: var(--color-light);
+  opacity: 0;
+  transform: translateY(100%);
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.contact-email.is-copied .contact-email-copied {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.contact-drag {
+  position: absolute;
+  left: 0;
+  bottom: clamp(2rem, 7vh, 4rem);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 1.9rem clamp(4rem, 8vw, 6.5rem) 1.9rem clamp(1.5rem, 3vw, 2.5rem);
+  font-family: "Higher Jump", var(--font-secondary);
+  font-size: 1.35rem;
+  line-height: 1;
+  color: var(--color-light);
+  pointer-events: none;
+}
+
+/* Same ground as the card's, weighted to the left: this panel meets the
+   frame's own edge there, so it stays solid all the way to it and only lets
+   go on the right and along the top and bottom. */
+.contact-drag::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-bg);
+  -webkit-mask-image:
+    linear-gradient(90deg, #000 0%, #000 74%, transparent 100%),
+    linear-gradient(180deg, transparent, #000 22%, #000 78%, transparent);
+  mask-image:
+    linear-gradient(90deg, #000 0%, #000 74%, transparent 100%),
+    linear-gradient(180deg, transparent, #000 22%, #000 78%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* The same mark, mirrored, on the edge the reader leaves by.
+   ---------------------------------------------------------------
+   Everything about it is .contact-drag's — the hand, the size, the ground it
+   is set on — reversed along one axis, because the two are a pair and reading
+   as a pair is the whole of what makes the second one obvious.
+
+   On the frame's own edge, both layouts, and the column is no reason not to
+   be: by the time this section is on screen the sidebar has come apart and
+   drifted off the right of it (see the exit in contact.js), so the corner it
+   used to stand over is empty. Unlike the mark opposite, this one takes the
+   pointer — it is the one control on the closing frame that is not the field
+   itself. */
+.contact-top {
+  position: absolute;
+  right: 0;
+  bottom: clamp(2rem, 7vh, 4rem);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  padding: 1.9rem clamp(1.5rem, 3vw, 2.5rem) 1.9rem clamp(4rem, 8vw, 6.5rem);
+  border: 0;
+  background: none;
+  font-family: "Higher Jump", var(--font-secondary);
+  font-size: 1.35rem;
+  line-height: 1;
+  color: var(--color-light);
+  cursor: pointer;
+  transition: color 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.contact-top:hover {
+  color: var(--color-accent);
+}
+
+.contact-top::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-bg);
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0%, #000 26%, #000 100%),
+    linear-gradient(180deg, transparent, #000 22%, #000 78%, transparent);
+  mask-image:
+    linear-gradient(90deg, transparent 0%, #000 26%, #000 100%),
+    linear-gradient(180deg, transparent, #000 22%, #000 78%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+.contact-drag-arrow {
+  display: block;
+  width: clamp(1.4rem, 2vw, 2rem);
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  /* Left as the source draws it — pointing up and out, into the field it is
+     talking about. contact.js keeps it trembling around that angle. */
+}
+
+/* Clearing browser chrome that does not get out of the way.
+   ---------------------------------------------------------------
+   .contact-field is position: fixed, so it is laid out against the initial
+   containing block — which is the *large* viewport, the one you get with the
+   toolbars retracted. Both hints below hang off its bottom edge, so on a
+   browser whose bottom bar is always there they sit underneath it and are
+   simply not on screen. Chrome on Android retracts its bar as you scroll, so
+   by the time the reader reaches the closing field it is gone and they look
+   fine; Firefox keeps its bar, and they are gone instead.
+
+   `100lvh - 100svh` is exactly that bar: the large viewport minus the small
+   one is the height of the chrome that comes and goes. Zero on a browser
+   where nothing moves, and on the desktop — so this adds nothing anywhere it
+   is not needed. The safe-area inset covers a home indicator on top of it. */
+@media (hover: none) and (pointer: coarse) {
+  .contact-drag,
+  .contact-top {
+    bottom: calc(clamp(2rem, 7vh, 4rem) + (100lvh - 100svh) + env(safe-area-inset-bottom, 0px));
+  }
+}

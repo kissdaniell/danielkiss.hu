@@ -1,0 +1,251 @@
+.hero {
+  /* No explicit height: its rendered height is entirely derived from
+     .skills-panel's own height plus the pin-spacer GSAP inserts around it
+     (see skills.js) — the pin there is held for the full targetHeroHeight
+     scroll distance (currently 2.4x viewport height) the sidebar
+     transition also relies on, so .hero ends up taller than that (panel
+     height + pin duration, added together). That's expected: the sidebar
+     transition and skills reveal both still measure their own progress
+     against that fixed distance, not against .hero's actual rendered
+     height. Setting a height here too would just add on top of that, not
+     replace it, since the pin-spacer becomes .hero's actual content. */
+}
+
+.hero-liquid {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  /* A decorative backdrop, aria-hidden in the markup and never a target. It
+     matters because the second video inside it covers the whole viewport at
+     opacity 0 for most of the page — invisible, but without this still a
+     full-screen element in the hit-test. */
+  pointer-events: none;
+}
+
+/* Past #portfolio this layer has nothing left to show — the video under it
+   has faded out and the canvas over it paints the page's own background
+   colour everywhere it has not been disturbed, so hiding it is not something
+   the eye can catch. What it saves is the compositing of a full-viewport
+   canvas for the rest of the page. The solver and both videos are stopped
+   from JS at the same moment (ui/liquidRetire.js); visibility rather than
+   display so there is no reflow either way. */
+.hero-liquid.is-retired {
+  visibility: hidden;
+}
+
+.hero-liquid-video,
+.hero-liquid-overlay,
+.hero-liquid-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-liquid-video {
+  object-fit: cover;
+}
+
+/* Starts hidden via plain CSS, not a JS gsap.set() — guaranteed from the
+   very first paint with no async/sync timing gap to fall through (see the
+   skills-heading-underline flash bug this same mistake caused). skills.js
+   fades it in as #skills scrolls into view, then fades the whole
+   .hero-liquid wrapper back out again. */
+.hero-liquid-video--alt {
+  opacity: 0;
+  filter: blur(24px);
+}
+
+.hero-liquid-overlay {
+  background: url("/img/traffic.png");
+  width: 100%;
+  height: 100%;
+}
+
+
+/* The opening frame for windows taller than they are wide.
+   ---------------------------------------------------------------
+   Not rendered at all above 4:3 — up there the frame is the sidebar's own
+   children wearing a FLIP, and this would be a second copy of it. See the
+   note in the markup for why it is separate markup rather than the same
+   elements rearranged.
+
+   Laid over the first screen of the hero spacer rather than in its flow, so
+   it costs no document height and simply scrolls away as the skills panel
+   pinned behind it comes up. ui/portraitHero.js fades it out over the first
+   third of that, so the two are never both asking to be read. */
+.hero-portrait {
+  display: none;
+}
+
+@media (aspect-ratio < 4/3) {
+  .hero {
+    position: relative;
+  }
+
+  .hero-portrait {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    /* Held around the middle rather than dropped to the foot of the frame:
+       upright, the bottom band the wide layout uses leaves the whole top two
+       thirds empty. The gaps do the filling — they are what spreads the
+       blocks across a tall screen without any of them having to grow into
+       something they are not. */
+    justify-content: center;
+    gap: clamp(calc(1.4 * var(--ui)), 5vh, calc(3 * var(--ui)));
+    width: 100%;
+    /* svh, not vh, and not dvh either.
+       ---------------------------------------------------------------
+       On a phone `100vh` is the *large* viewport: the height the page
+       would have if the address bar were hidden. It is not hidden when
+       the page opens, so the bottom band of this frame — the KEEP
+       DIGGING scrawl — was laid out below the fold and only appeared
+       once the reader had scrolled it away, which is exactly when they
+       have stopped looking at the hero.
+
+       `svh` is the other end of the same pair: the height with the bar
+       *shown*, so the frame fits from the first paint. dvh would track
+       the bar as it slides and reflow the whole frame on every scroll,
+       which is the jitter this pass is removing everywhere else.
+       Slack when the bar retracts is absorbed by justify-content and
+       the gap above, which is what they are for. */
+    height: 100svh;
+    padding: calc(4.5 * var(--ui)) calc(1.4 * var(--ui)) calc(3 * var(--ui));
+    pointer-events: none;
+  }
+
+  .hero-portrait a {
+    pointer-events: auto;
+  }
+
+  /* ---- The two scrawls. */
+  .hero-portrait-mark {
+    display: flex;
+    align-items: center;
+    column-gap: 0.45em;
+    font-family: "Higher Jump", var(--font-secondary);
+    font-size: calc(0.95 * var(--ui));
+    line-height: 1;
+    color: var(--color-light);
+  }
+
+  /* Arrow first, the way the wide layout's own tag mark reads: it points back
+     down into the letterforms the line is talking about, and on the right of
+     the words it was pointing at nothing. Set smaller than the mark below it
+     — it is an aside on the name, not a second instruction. */
+  .hero-portrait-mark--tag {
+    justify-content: flex-end;
+    text-align: right;
+    font-size: calc(0.76 * var(--ui));
+  }
+
+  /* Out of the column and into the corner. The frame's three remaining blocks
+     centre on their own that way, and the invitation to scroll sits where the
+     scroll is going — at the bottom, off the edge, out of the composition's
+     way. */
+  .hero-portrait-mark--dig {
+    position: absolute;
+    left: calc(1.4 * var(--ui));
+    bottom: calc(1.9 * var(--ui));
+    font-size: calc(0.81 * var(--ui));
+  }
+
+  .hero-portrait-arrow {
+    display: block;
+    width: 1.5em;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+    flex-shrink: 0;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+
+  /* Half a turn from the source's up-right, so it points back down into the
+     letterforms the line is talking about — the same reading the wide
+     layout's own marks carry. */
+  .hero-portrait-arrow--tag {
+    transform: rotate(180deg);
+  }
+
+  .hero-portrait-arrow--dig {
+    transform: rotate(135deg);
+  }
+
+  /* ---- The name, spanning the frame.
+     The size is written by ui/portraitHero.js, which measures what the run
+     comes to and scales it until it fills this box exactly — the same fit the
+     wide layout's name gets, and for the same reason: the answer depends on
+     the display face's own metrics, so a number here would be right for Anton
+     and wrong for whatever stands in before it arrives. */
+  .hero-portrait-name {
+    position: relative;
+    width: 100%;
+  }
+
+  .hero-portrait-name-line {
+    display: inline-block;
+    font-family: var(--font-poster);
+    font-weight: 400;
+    font-size: 4rem;
+    line-height: 1.03;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .hero-portrait-word {
+    color: var(--color-light);
+    text-shadow:
+      0 0 0.035em color-mix(in srgb, currentColor 45%, transparent),
+      0 0 0.08em color-mix(in srgb, currentColor 20%, transparent);
+  }
+
+  .hero-portrait-word--accent {
+    color: var(--color-text);
+  }
+
+  /* Hung under the run the same way the wide layout hangs its own: short of
+     both ends, and low enough to read as drawn under the words rather than
+     through them. */
+  .hero-portrait-underline {
+    position: absolute;
+    left: 8%;
+    top: 97%;
+    width: 84%;
+    height: 14%;
+    overflow: visible;
+  }
+
+  /* ---- The three marks the wide layout's opening row carries. */
+  /* Stepped in from the frame's own left edge rather than sitting flush with
+     the name above them: the row is three short marks against a line that
+     spans the whole width, and starting them at the same rule made them read
+     as an afterthought hanging off its corner. */
+  .hero-portrait-social {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    margin-left: 8%;
+    column-gap: clamp(calc(1 * var(--ui)), 5vw, calc(2.2 * var(--ui)));
+    row-gap: calc(0.5 * var(--ui));
+  }
+
+  .hero-portrait-social a {
+    font-family: var(--font-poster);
+    text-transform: uppercase;
+    font-size: calc(0.85 * var(--ui));
+    letter-spacing: 0.08em;
+    line-height: 1;
+    color: var(--color-light);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .hero-portrait-social a:hover {
+    color: var(--color-accent);
+  }
+}

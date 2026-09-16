@@ -1,0 +1,404 @@
+/* Awards — the one act on the page that is deliberately *not* pinned. The
+   heading and the orbiting certificates below it are a single, self-contained
+   image; there is no second scene to hand off to, so there is nothing for a
+   pin to hold the reader in place for.
+
+   The certificates ride an ellipse rather than a circle: a true circle wide
+   enough to spread them across the column would need more vertical room than
+   a viewport-height section has. Squashing the vertical radius keeps the
+   sweep wide and the arc shallow — the shape the layout calls for — while
+   the lower half of the ellipse falls below the frame, which is where a
+   certificate goes to come round again. All of that is measured and driven
+   from awards.js; only the look lives here. */
+/* The one section on the page that is deliberately taller than the viewport
+   and simply scrolled through. Holding it to 100vh meant the title and the
+   arc had to share a single screen, and both were the poorer for it: the
+   heading arrived on top of the previous section's last frame and sat almost
+   on the certificates. Given its own height, each part gets room, and the
+   reader meets them one after the other. */
+.awards {
+  justify-content: flex-start;
+  min-height: 0;
+  height: auto;
+  /* Both of these are 2.5x what they were. The title needs to arrive on its
+     own, not in the previous section's wake and not on the arc's doorstep —
+     and now that the section is free to be as tall as it likes, the room
+     costs nothing but scroll. */
+  gap: clamp(6rem, 17.5vh, 11rem);
+  padding-top: clamp(12rem, 35vh, 20rem);
+  padding-bottom: clamp(4rem, 10vh, 7rem);
+  overflow: hidden;
+}
+
+/* Heading and its answer, as one block sized to the heading's own width, so
+   "Worth the try" lands under the heading's right edge rather than the
+   column's. */
+.awards-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: clamp(1.6rem, 5vh, 3rem);
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.awards-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  column-gap: 0.4em;
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 5.5rem;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+
+.awards-heading-line {
+  display: inline-block;
+}
+
+.awards-heading-line--light {
+  color: var(--color-light);
+}
+
+.awards-heading-line--accent {
+  color: var(--color-accent);
+}
+
+.awards-heading-line-wrap {
+  position: relative;
+  display: inline-block;
+  perspective: 500px;
+}
+
+.awards-heading-underline {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  height: 0.3em;
+  overflow: visible;
+}
+
+.awards-heading-underline-stroke {
+  fill: none;
+  stroke: var(--color-light);
+  stroke-width: 10;
+  stroke-linecap: round;
+  filter: url(#markerRough);
+  animation: hero-underline-glitch 2.4s steps(1, jump-end) infinite;
+}
+
+/* Deliberately not the poster face: set in Anton at a smaller size it read as
+   a second, weaker heading competing with the first. Now the same scrawl-and-
+   arrow pairing the rest of the page uses for its asides — the hero's own
+   marks, the note beside the fourth skills block. It was tracked-out Satoshi
+   at half opacity, which read as a caption, while the arrow beside it was
+   already speaking the other language on its own. Kept small deliberately:
+   the heading above is the thing being said. */
+.awards-subheading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1;
+  color: var(--color-light);
+}
+
+.awards-subheading-text {
+  font-family: "Higher Jump", var(--font-secondary);
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
+
+/* The drawn arrow the rest of the page uses, rather than a plain rule —
+   rotated 45deg from the source's up-right to point straight along the line
+   at the words it introduces. awards.js keeps both it and the words
+   trembling, each on its own loop. */
+.awards-subheading-arrow {
+  display: block;
+  /* Brought down with the words beside it — at its old size it was nearly
+     twice their height. */
+  width: 1.5rem;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  transform: rotate(45deg);
+}
+
+/* Taller than the room left for it, deliberately: the ellipse carries on
+   below the section's bottom edge instead of stopping at it, so the lower
+   half of the arc is something the reader can see a little of rather than a
+   clean horizontal cut. */
+/* A height of its own now that the section is free to be as tall as its
+   contents. Every ratio in awards.js is measured against this box, so it is
+   also what decides how round the arc is: the ellipse used to be flattened
+   into whatever a viewport-height section had left over, which was about
+   three times wider than it was tall. */
+.awards-orbit {
+  position: relative;
+  width: 100%;
+  /* Grown downward only: the ellipse's centre and both radii stay exactly
+     where they were in pixels (see the ratios in awards.js, which were
+     re-derived against this taller box), so the extra height is all extra
+     lower half — about a tenth of the arc more than before — without moving
+     the flanks up into the list of names. */
+  height: 44rem;
+  flex: 0 0 auto;
+}
+
+/* The names, stacked in the arc's top-left corner where the ring is already
+   dissolving into the page. Above the ring rather than inside it, so the mask
+   that fades the certificates never touches the text. */
+/* The block as a whole: its own positioning lives here now that a title sits
+   above the names.
+   Pulled up out of the orbit box rather than starting at its top edge —
+   there is a clear run of about 150px between the heading and the orbit, and
+   the block is the only thing that can use it. What it cannot do is grow
+   downward: the certificate climbing the arc's left flank passes just under
+   here, and its top corner clears the last line by around 25px. That gap is
+   also what limits how far right the block can sit.
+   So the ninth name, and the parenthesis each name now carries, are both paid
+   for upward. -2.2rem held eight lines: 0.92rem of that is the leading of the
+   line that joined them (0.68rem at 1.35), which puts the foot of the block
+   back where it was, and the remaining 1.5rem is for the width the
+   parentheses added — the certificate rising on the left flank passes the
+   block's bottom-right corner, so a block that reaches further right meets it
+   sooner. Measured rather than guessed: at the widest name the closest a card
+   corner now comes is about 24px, which is the clearance the note above is
+   describing. */
+.awards-credits {
+  position: absolute;
+  top: -4.62rem;
+  left: 3.4rem;
+  /* The block sits over the arc, so it takes no pointer events as a whole;
+     the names inside it ask for theirs back. */
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Smaller than the names it introduces, but weighted and widely tracked, so
+   it reads as their label rather than as the first of them. */
+.awards-credits-title {
+  margin-bottom: 0.5rem;
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  color: var(--color-light);
+}
+
+.awards-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  /* Each name only as wide as itself, rather than stretched to the longest
+     one. Nothing moves — the names are left-aligned and never wrap — but it
+     makes the line and its link the same box, so the hover below cannot be
+     picked up by the empty run of column to the right of a short name. */
+  align-items: flex-start;
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  /* Leading rather than a gap: see the note on .awards-credits for why the
+     block's total height is the constraint here. */
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  /* Dimmed through the colour rather than opacity, so the highlighted line
+     below can come back to full strength — a child cannot out-shine the
+     group opacity of its parent. */
+  color: rgba(236, 231, 220, 0.62);
+}
+
+/* Whichever certificate is passing the top of the arc names itself here —
+   and pointing at it names it too, which is the same answer the card under
+   the reader's cursor gives. Both live on the line rather than on the link
+   inside it, so the one transition serves them: a colour animating on the
+   li is inherited by the anchor as it animates, where a second transition on
+   the anchor would be easing its way toward a value still moving. */
+.awards-list li {
+  transition: color 0.35s ease;
+}
+
+.awards-list li.is-active,
+.awards-list li:hover,
+.awards-list li:focus-within {
+  color: var(--color-accent);
+}
+
+/* Every name is its certificate's own link — the same destination the card
+   carries, reachable without waiting for it to come round. Undressed
+   entirely: the list is already set as a list of names, and an underline or
+   a link colour would make it read as navigation. */
+.awards-list a {
+  color: inherit;
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+/* The mask lives on the ring rather than the orbit so it never touches the
+   Awards mark, which is a sibling.
+   Two layers, intersected: the sides get the same dissolve the other two
+   galleries use, and the bottom fades out well before the section's edge
+   clips it — wherever that clip lands, the certificates there are already
+   nearly gone. no-repeat matters: without it the gradient would tile, and
+   the cards that have swung below the box would reappear in bands. */
+.awards-ring {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent),
+    linear-gradient(180deg, #000 74%, transparent 99%);
+  mask-image:
+    linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent),
+    linear-gradient(180deg, #000 74%, transparent 99%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* Every card is laid out at the ring's origin and moved entirely by the
+   transform awards.js writes each frame — no per-card left/top, so a card's
+   position is one property to read and one to write. */
+.awards-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  height: 20rem;
+  /* The certificates are A4 captures. */
+  aspect-ratio: 2480 / 3508;
+  will-change: transform;
+  text-decoration: none;
+}
+
+.awards-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Transform and brightness live on the image, not the anchor: the anchor's
+     transform belongs to the orbit loop, and a CSS transition there would be
+     easing its way to a value that has already moved on. */
+  transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+.awards-card:hover .awards-card-image {
+  transform: scale(1.04);
+  filter: brightness(1.12);
+}
+
+/* Sits on the ellipse's own centre — awards.js writes that position out as
+   --awards-center-y, since it is the one number both the orbit maths and
+   this need to agree on. Anchoring it there rather than to the orbit's
+   bottom edge is also what keeps it off the section's clip line. */
+.awards-badge {
+  position: absolute;
+  left: 50%;
+  top: var(--awards-center-y, 72%);
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.1em;
+  pointer-events: none;
+}
+
+.awards-badge-text {
+  font-family: "Higher Jump", var(--font-secondary);
+  font-size: 2.4rem;
+  /* Room for the scrawl's own overshoot below the baseline, which a
+     line-height of 1 was cropping. */
+  line-height: 1.25;
+  color: var(--color-light);
+}
+
+.awards-badge-arrow {
+  display: block;
+  width: clamp(2.2rem, 3.4vw, 3.4rem);
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  /* Left as the source draws it — up and to the right, breaking out of the
+     word's top-right corner and pointing back at the arc. The negative
+     margin is what lifts it clear of the cap line, and it is in rem rather
+     than em on purpose: an em here would resolve against the image's own
+     inherited font size, not the size of the word it is climbing out of. */
+  margin-top: -1.5rem;
+}
+
+
+/* ===============================================================
+   Portrait: narrower than 4:3.
+   ===============================================================
+   Two scales are in play below (see the note on --ui in main.css): `rem` is
+   the page's composition, which upright is small, and `var(--ui)` is the
+   reading scale the portrait furniture is written against. Anything holding a
+   proportion stays on the first; anything meant to be read gets `max()` of
+   both — the composition's answer while there is room for it, and a
+   legibility floor once there is not.
+   =============================================================== */
+@media (aspect-ratio < 4/3) {
+  /* The credits are set small on purpose — they are a footnote beside the
+     cards, not a list anyone is asked to read through. On the composition's
+     own scale upright that becomes six or seven pixels, which is not a
+     footnote, it is a smudge. A floor puts it back to something legible
+     without letting it grow into a second heading. */
+  .awards-credits-title {
+    font-size: max(0.95rem, calc(0.72 * var(--ui)));
+  }
+
+  .awards-list {
+    font-size: max(1rem, calc(0.78 * var(--ui)));
+  }
+
+  /* ---- ...and the arc gets out from under them.
+     The names are set to be read, which upright means they are set on the
+     legibility scale rather than the page's — so the block is taller here
+     than the composition ever expected, and the ring's left flank was coming
+     up through it. Three moves, all of them small: the block starts a little
+     higher, the certificates are a little smaller, and the box the ellipse is
+     measured from is taller. The last one is the one that does the work —
+     awards.js derives the centre and both radii as fractions of this height
+     (0.746 and 0.409), so growing it walks the whole arc down the page
+     without touching its shape. All three carry the same legibility floor the
+     names do, or the clearance they buy would evaporate on a handset, which
+     is exactly where the names are largest relative to everything else. */
+  .awards-credits {
+    /* Same bargain the wide layout strikes for the ninth name, in the terms
+       that hold here: one more line of leading, taken off the top so the foot
+       of the block — and with it the clearance the note above is about —
+       stays where the three moves put it. The line's own height has to be
+       asked for rather than assumed, since the names carry a legibility floor
+       and it is the floor that answers on a wide portrait tablet. */
+    top: calc(-2.4 * var(--ui) - 1.35 * max(1rem, calc(0.78 * var(--ui))));
+  }
+
+  .awards-orbit {
+    height: max(52rem, calc(42 * var(--ui)));
+    /* The vertical radius comes off the horizontal one rather than off this
+       box's height — upright, height is the plentiful dimension, and taking
+       the radius from it stood the sweep on its end. Half again as wide as it
+       is tall is the same proportion the wide layout's own arc comes out at,
+       so the shape reads as the same shape at any shape of window. */
+    --awards-flatten: 1.5;
+    /* ...and with the arc that much shallower, the centre no longer has to sit
+       near the foot of the box to keep the top of the sweep off the names. */
+    --awards-center-ratio: 0.62;
+  }
+
+  .awards-card {
+    height: max(13rem, calc(9 * var(--ui)));
+  }
+}

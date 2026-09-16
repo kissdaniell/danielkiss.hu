@@ -1,0 +1,799 @@
+/* WPKoi showcase — a pinned 100vh act that sits between the portfolio's
+   scene-two (which ends on the big WPKoi brand mark) and #awards.
+
+   Four rows, spread across the full viewport height: the Experience line,
+   the "It Took My Time." title with the Visit Site mark beside it, the
+   parallax strip (with the 01/05 counter and the scroll hint in a narrow
+   column to its left), and the career timeline along the bottom.
+
+   The strip itself reuses the horizontal-parallax idea from the Codrops
+   demo, but scoped to the column left of the fixed sidebar rather than the
+   whole viewport, with both of its edges masked into the background.
+
+   Everything that moves per-frame (the track's translate, each media's
+   counter-shift, the --focus dimming) is written from wpkoi.js as plain
+   inline styles / custom properties, not by GSAP — GSAP only owns the
+   entrance and the counter's swap animation, so the two never fight over
+   the same property. */
+.wpkoi {
+  position: relative;
+  /* height, not just .section's min-height: the pin holds this at exactly
+     one viewport, and any extra height would show as a gap the pin has to
+     scroll through before the gallery starts moving.
+
+     svh rather than vh for the reason the other sections give: `vh` is the
+     bar-hidden height, and this act's bottom band was landing under the bar
+     for the whole time it was on screen. */
+  height: 100svh;
+  overflow: hidden;
+  /* Tighter than .section's own 4rem: this section carries four stacked
+     rows rather than one centred block, and the reference viewport is only
+     703px tall. */
+  padding-top: clamp(2rem, 6vh, 3.2rem);
+  padding-bottom: clamp(1.5rem, 5vh, 2.8rem);
+  /* Overrides .section's own display:flex, and not just as a matter of
+     taste: ScrollTrigger copies the pinned element's display onto the
+     pin-spacer it wraps it in, so a flex section becomes a flex *item* of
+     its own spacer. Every refresh reverts the spacer's explicit width for
+     a moment, and in that moment a flex item shrink-to-fits — which is
+     exactly when measure() in wpkoi.js reads gallery.clientWidth to work
+     out where each media has to sit. Left as flex it measured a collapsed
+     width and every media landed ~60px off centre after a resize. As a
+     block the section keeps its full width throughout, so the centring is
+     stable; .wpkoi-stack below does the vertical layout .section's flex
+     was doing. */
+  display: block;
+}
+
+/* The flex column lives here rather than on .wpkoi itself, and that is not
+   incidental — see the display:block note above: ScrollTrigger copies the
+   pinned element's display onto its spacer, so .wpkoi has to stay a block. */
+.wpkoi-stack {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3.5vh, 2.2rem);
+  width: 100%;
+  height: 100%;
+}
+
+/* The strip's row takes all the height the title block and the footer don't
+   need, and centres the strip inside it. Distributing that space evenly
+   between the four rows instead (justify-content: space-between, which this
+   used to do) pushed the strip well below the middle of the section: the
+   header block is nearly three times the footer's height, so equal gaps do
+   not put the thing between them anywhere near centre. */
+.wpkoi-inner {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 0;
+}
+
+.wpkoi-strip {
+  /* Nudges the strip up off the middle of its own row and toward the middle
+     of the *section*. Centring it in the row alone reads low, because the
+     header above (the Experience line plus the title) is around twice the
+     height of the footer below it — so the row's own midpoint sits well
+     under the section's. Half of this margin is the correction; in rem, so
+     it tracks the blocks it is compensating for at every viewport. Kept
+     short of a full correction on purpose: closing the last few pixels
+     would leave the strip touching the title's descender line. */
+  margin-bottom: 4rem;
+  display: flex;
+  /* stretch, not center: the aside next to the strip is a full-height
+     column with the counter pinned to its top and the scroll hint to its
+     bottom, so it has to take the strip's height. */
+  align-items: stretch;
+  gap: 2.83rem;
+  width: 100%;
+}
+
+.wpkoi-aside {
+  flex: 0 0 auto;
+  width: 10.6rem;
+  display: flex;
+  flex-direction: column;
+  /* Counter at the top of the strip, scroll hint at the bottom of it. */
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: clamp(0.9rem, 2.4vh, 1.35rem);
+  /* The column keeps its width so the strip beside it doesn't move; what
+     changed is where its contents sit inside it. Both marks are half the
+     size they were, and the left padding spends most of what that freed on
+     pushing them off the section's own left edge — everything else in this
+     section starts flush there, and these two were repeating that line
+     rather than sitting beside the strip. */
+  padding: 1rem 0 1rem 3.4rem;
+}
+
+/* Row 1 — the Experience line and the title, as one block. They are one
+   thought, and pairing them with a tight internal gap (rather than letting
+   the stack's own row gap fall between them) is also what buys the strip
+   below the room it needs to sit near the middle of the section. */
+.wpkoi-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+  /* Held off the section's own left edge. Everything else here starts flush
+     against it — the aside already stepped in for the same reason — and this
+     block sitting right on the frame read as unfinished rather than
+     deliberate. Padding, not margin: box-sizing is border-box, so the block
+     keeps its full width and only its contents move. */
+  padding-left: 1rem;
+}
+
+/* The Experience line is deliberately the same construction as
+   .portfolio-experience (same size, same scrawled "Now", same marker
+   underline): the two sections are one story told twice, and the repeated
+   mark is what ties them together. The underline spans the whole line here
+   rather than just the last word. */
+.wpkoi-experience-wrap {
+  position: relative;
+  display: inline-block;
+  align-self: flex-start;
+}
+
+.wpkoi-experience {
+  /* No opacity here — wpkoi.js owns it (hidden at 0, revealed to 0.75, its
+     resting dimness), the same arrangement .portfolio-experience uses. */
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 1.2rem;
+  white-space: nowrap;
+  color: var(--color-light);
+}
+
+.wpkoi-experience-sep,
+.wpkoi-experience-arrow {
+  opacity: 0.5;
+}
+
+.wpkoi-experience-now {
+  font-family: "Higher Jump", var(--font-secondary);
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 1.3em;
+  color: var(--color-accent);
+}
+
+.wpkoi-experience-underline {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  height: 0.6em;
+  overflow: visible;
+}
+
+.wpkoi-experience-underline-stroke {
+  fill: none;
+  stroke: var(--color-light);
+  stroke-width: 6;
+  stroke-linecap: round;
+  filter: url(#markerRough);
+  animation: hero-underline-glitch 2.4s steps(1, jump-end) infinite;
+}
+
+/* Row 2 — the title and the Visit Site mark beside it. baseline alignment
+   would drop the circled mark to the title's baseline; centre keeps it
+   sitting against the middle of the capitals, the way it reads in the
+   layout. */
+.wpkoi-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: clamp(1.5rem, 8vw, 8rem);
+  row-gap: 1rem;
+  width: 100%;
+}
+
+.wpkoi-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.3em;
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  /* Half what it was. At 6rem this line, the Experience mark above it and
+     the strip below all wanted the same room, and the section read as full
+     rather than composed — see .wpkoi-strip's margin, which spends the
+     height this gives back on air under the strip instead of around it. */
+  font-size: 3rem;
+  line-height: 1;
+  letter-spacing: 0.005em;
+}
+
+.wpkoi-title-line {
+  display: inline-block;
+}
+
+.wpkoi-title-line--light {
+  color: var(--color-light);
+}
+
+.wpkoi-title-line--accent {
+  color: var(--color-accent);
+}
+
+/* The two circled marks — "Visit Site" beside the title, "More Details" at
+   the end of the footer. The ring is one hand-drawn-looking path under the
+   same markerRough filter every other scrawl on the page uses, stretched to
+   the text's own box; non-scaling-stroke keeps the stroke an even weight
+   while it stretches, which a plain stroke-width would not.
+
+   The whole mark sits at a slight angle, as if it were scrawled on after
+   the fact rather than laid out. That tilt is applied from wpkoi.js, not
+   here: GSAP writes the entrance as one inline transform, so a CSS rotate
+   on the same element would just be overwritten the first time it runs. */
+.wpkoi-visit {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.85em 1.9em;
+  text-decoration: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Pushed to the far end of the title's row rather than trailing the words by
+   a gap: it now lines up vertically with the "View Full Experience" mark
+   closing the footer, which is the same gesture at the other end of the
+   section. The row's column-gap stays as the minimum that keeps the two off
+   each other before the row wraps. */
+.wpkoi-visit--main {
+  margin-left: auto;
+}
+
+.wpkoi-visit-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  font-family: "Higher Jump", var(--font-secondary);
+  /* Everything else in the mark — the padding, the arrow, the ring that
+     stretches to the text's box — is sized in em off this one value, so the
+     whole thing scales together from here. */
+  font-size: 0.945rem;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--color-light);
+  transition: color 0.25s ease;
+}
+
+/* The same drawn arrow the portfolio's marks use, rather than an arrow
+   glyph from the body face. */
+.wpkoi-visit-arrow {
+  display: block;
+  width: 1.5em;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+
+.wpkoi-visit-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.wpkoi-visit-ring-stroke {
+  fill: none;
+  stroke: var(--color-light);
+  stroke-width: 3;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  filter: url(#markerRough);
+  animation: hero-underline-glitch 2.4s steps(1, jump-end) infinite;
+}
+
+/* Only the words pick up the accent on hover — the ring and the arrow stay
+   as they are, so the mark reads as being highlighted rather than swapped
+   out wholesale. */
+.wpkoi-visit:hover .wpkoi-visit-text {
+  color: var(--color-accent);
+}
+
+/* Footer variant: same mark, quieter — it closes the section rather than
+   carrying it. Held back with colour rather than opacity, deliberately:
+   wpkoi.js scrubs this element's opacity for the entrance, and a CSS
+   transition on the same property would try to ease its way to every value
+   the scrub writes, turning a scroll-synced reveal into a laggy one. */
+.wpkoi-visit--more {
+  padding: 0.7em 1.4em;
+}
+
+.wpkoi-visit--more .wpkoi-visit-text {
+  font-size: 0.8rem;
+}
+
+.wpkoi-visit--more .wpkoi-visit-ring-stroke {
+  stroke-width: 2.2;
+}
+
+.wpkoi-visit--more .wpkoi-visit-arrow {
+  opacity: 0.72;
+}
+
+.wpkoi-counter {
+  display: flex;
+  align-items: baseline;
+  gap: 0.1em;
+  font-family: var(--font-poster);
+  font-size: 1.6rem;
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+  /* Digits shouldn't nudge the slash sideways as the numeral steps
+     01 -> 05 (min-width covers the same ground for a face without real
+     tabular figures). */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Two nested spans rather than one: the entrance animates the outer box
+   (alongside the slash and the total), while the numeral's step-to-step
+   swap animates the inner one. Both touch opacity/filter/y — on a single
+   element the swap would be writing them at the same moment the entrance
+   scrubs them in reverse (scrolling back up out of the pin does exactly
+   that), and whichever rendered last would win for the frame. On separate
+   elements the two just multiply. */
+.wpkoi-counter-current {
+  display: inline-block;
+  min-width: 1.15em;
+  color: var(--color-accent);
+}
+
+.wpkoi-counter-value {
+  display: inline-block;
+}
+
+/* The slash and total are held back by colour alpha rather than opacity:
+   opacity on these three spans belongs to wpkoi.js (the entrance settles
+   all of them to 1, and the numeral's swap animation rides it), so a
+   resting opacity here would just be something for the entrance to
+   overwrite on its way in. */
+.wpkoi-counter-slash {
+  color: rgba(236, 231, 220, 0.3);
+}
+
+.wpkoi-counter-total {
+  color: rgba(236, 231, 220, 0.5);
+}
+
+/* Row 4 — everything before and around WPKoi, and the More Details mark
+   closing the row off on the right. */
+.wpkoi-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(1rem, 2.5vw, 2.5rem);
+  width: 100%;
+}
+
+/* Four columns hairlined apart. The last one is narrower on purpose: it
+   carries the shortest role by some distance ("Video Editing"), and the
+   width it gives up is what keeps the longest one ("Web Development &
+   Client Projects") on a single line once the More Details mark has taken
+   its share of the row. */
+.wpkoi-timeline {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) 0.82fr;
+  flex: 1 1 auto;
+  min-width: 0;
+  list-style: none;
+}
+
+.wpkoi-timeline-item {
+  padding: 0 0.6rem;
+  border-left: 1px solid rgba(236, 231, 220, 0.16);
+}
+
+.wpkoi-timeline-item:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.wpkoi-timeline-years {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+  line-height: 1.2;
+  color: var(--color-light);
+}
+
+.wpkoi-timeline-arrow {
+  color: var(--color-accent);
+}
+
+.wpkoi-timeline-title {
+  margin-top: 0.3rem;
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 1.17rem;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  color: var(--color-light);
+}
+
+/* Sized so the longest role holds one line in its own column — the four
+   read as a row of equals, and a single wrapped one would break that. Since
+   the whole page scales from one unit, fitting it here means it fits at
+   every viewport. */
+.wpkoi-timeline-role {
+  margin-top: 0.2rem;
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.56rem;
+  line-height: 1.35;
+  color: var(--color-light);
+  opacity: 0.55;
+}
+
+/* ---- 4:3 to 5:3.
+   ---------------------------------------------------------------
+   Windows in this band are taller in proportion than the 2.16:1 reference
+   the whole page is composed against, and the height they add lands here:
+   the strip's row takes whatever the head and this footer leave, but it is
+   capped by the media's own aspect, so past a certain shape the extra goes
+   into air around the row rather than into the row. Which leaves a section
+   with room under it and four hairline columns of small type squeezed along
+   the bottom of it.
+
+   So the four take two rows instead of four columns and get their size back.
+   Twice the width per column is more than the longest role needs, which is
+   what lets the type grow without any of them wrapping — the one thing the
+   single-row version could never give them.
+
+   The mark closing the row keeps its size and its corner. align-items moves
+   from centre to the bottom edge for that: the timeline beside it is now
+   twice as tall, and centred against it the mark would float up into the
+   middle of the block instead of sitting on the line the section ends on.
+
+   Bounded at both ends. Above 5:3 the reference layout still fits as
+   composed; below 4:3 a different set of layouts takes over. */
+@media (min-aspect-ratio: 4 / 3) and (max-aspect-ratio: 5 / 3) {
+  .wpkoi-footer {
+    align-items: flex-end;
+  }
+
+  .wpkoi-timeline {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* Held off growing into the whole row: two columns across the full
+       content width would set each entry's three lines against a measure
+       several times what they come to, and read as four labels adrift in a
+       band rather than as a block. What it gives up goes to the gap before
+       the mark on the right. */
+    flex: 0 1 auto;
+    width: 42rem;
+    max-width: 100%;
+    row-gap: 1.15rem;
+  }
+
+  /* The hairlines now separate the two columns, not the four entries, so
+     they belong to the right-hand one only — the rule below resets what the
+     single-row version put on every item but the first. */
+  .wpkoi-timeline-item {
+    padding: 0 0.9rem;
+    border-left: 1px solid rgba(236, 231, 220, 0.16);
+  }
+
+  .wpkoi-timeline-item:nth-child(odd) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .wpkoi-timeline-years {
+    font-size: 0.82rem;
+  }
+
+  .wpkoi-timeline-title {
+    margin-top: 0.36rem;
+    font-size: 1.44rem;
+  }
+
+  .wpkoi-timeline-role {
+    margin-top: 0.26rem;
+    font-size: 0.68rem;
+  }
+}
+
+.wpkoi-scroll-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  font-family: "Higher Jump", var(--font-secondary);
+  font-size: 0.6rem;
+  color: var(--color-light);
+}
+
+.wpkoi-scroll-hint-arrow {
+  display: block;
+  width: 0.85rem;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  /* Same up-right-pointing source as the portfolio arrows, rotated to
+     point right — the direction the gallery itself travels. */
+  transform: rotate(45deg);
+}
+
+.wpkoi-gallery {
+  position: relative;
+  flex: 1 1 auto;
+  /* min-width:0 or the flex item refuses to shrink below the track's
+     intrinsic (very wide) content width and pushes the aside off-screen. */
+  min-width: 0;
+  overflow: hidden;
+  /* Same edge treatment as .portfolio-gallery, just a wider ramp — media
+     entering and leaving dissolves into the page rather than sliding past
+     a hard cut. */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+.wpkoi-track {
+  /* position:relative makes this the offsetParent every .wpkoi-media
+     measures its offsetLeft against in wpkoi.js — without it the offsets
+     would be relative to some ancestor further up and the centering math
+     would be off by that element's position. The inline padding is written
+     from JS too (enough to let the first and last media sit dead-centre at
+     either end of the travel). */
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2.076rem;
+  will-change: transform;
+}
+
+/* Every source here — both the stills and the two screen recordings — is a
+   4:3 capture of the site. The box is deliberately a little wider than
+   that (5:4 against the inner media's 118% overhang works out to ~1.48,
+   vs the source's 1.33), so covering it crops ~5% off the top and bottom
+   and ~7% off each side. That's the whole budget the parallax has to move
+   within, and it keeps both the site header and the bottom row of every
+   screenshot inside the frame — a 16:9 box would have cut a quarter of
+   the page height away. */
+.wpkoi-media {
+  position: relative;
+  flex: 0 0 auto;
+  --media-height: clamp(15rem, 43vh, 21.75rem);
+  height: var(--media-height);
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+  /* 1 rather than 0 so the media isn't rendered black for the frame
+     between parse and wpkoi.js's first render pass. */
+  --focus: 1;
+}
+
+/* The clips sit a little shorter than the stills. With every source at the
+   same aspect ratio, this is what keeps the strip from reading as a
+   metronome of identical boxes — and unlike giving them their own aspect
+   ratio, it costs no extra cropping. */
+.wpkoi-media--clip {
+  height: calc(var(--media-height) * 0.88);
+}
+
+.wpkoi-media-inner {
+  /* 118% wide, pulled 9% left: the parallax shift written by wpkoi.js
+     translates within that overhang, so the media can counter-move against
+     the track without ever exposing an edge. (The Codrops demo overhangs
+     by 25% — halved here because these are screenshots rather than
+     photography, and every extra percent of overhang is another percent of
+     the captured page cropped away.) */
+  position: absolute;
+  top: 0;
+  left: -9%;
+  width: 118%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform, opacity;
+  /* --focus is 1 dead-centre and falls to 0 toward the edges, so whatever
+     is off to the side reads as unlit background rather than competing
+     with the one piece being shown.
+
+     The dimming half of that is opacity rather than a brightness filter, and
+     that swap is what stopped the two clips in this strip stuttering. wpkoi.js
+     rewrites --focus as the strip moves; a filter change from script is a
+     paint invalidation, so every one of them made the browser push the video's
+     freshly decoded frame back through a filter pass before it could be
+     composited. Opacity on an already-promoted layer is a value the compositor
+     can change on its own without re-rastering anything.
+
+     It is very close to the same picture: this page's background is #17171a,
+     so fading toward it and darkening toward black land within a hair of each
+     other — and the place where they differ most, the far ends of the strip,
+     is exactly where the gallery's own mask is already fading the media out
+     anyway. */
+  opacity: calc(0.3 + 0.7 * var(--focus, 1));
+}
+
+/* Desaturation stays a filter, because there is no cheap stand-in for it —
+   but only on the stills. They are decoded once and then sit there, so
+   re-rastering one is a plain image blit; a <video> is the case that cannot
+   afford it. A clip at the edge of the strip therefore keeps its colour while
+   a screenshot next to it greys out, which at the opacity both are down to by
+   then is not something the strip gives you a chance to compare. */
+.wpkoi-media--shot .wpkoi-media-inner {
+  filter: saturate(calc(0.4 + 0.6 * var(--focus, 1)));
+}
+
+.wpkoi-media-tag {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  padding: 0.35em 0.7em;
+  border-radius: 1px;
+  background: var(--color-light);
+  color: var(--color-bg);
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  opacity: var(--focus, 1);
+  pointer-events: none;
+}
+
+.wpkoi-media-dot {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+
+/* ===============================================================
+   Portrait: narrower than 4:3.
+   ===============================================================
+   Two scales are in play below (see the note on --ui in main.css): `rem` is
+   the page's composition, which upright is small, and `var(--ui)` is the
+   reading scale the portrait furniture is written against. Anything holding a
+   proportion stays on the first; anything meant to be read gets `max()` of
+   both — the composition's answer while there is room for it, and a
+   legibility floor once there is not.
+   =============================================================== */
+@media (aspect-ratio < 4/3) {
+  /* The bar at the top of the screen is fixed and this section starts flush
+     against the frame, so the first row of it was under the bar's own type.
+     Enough padding to clear the bar and its padding, on the scale the bar is
+     itself written against. */
+  .wpkoi {
+    padding-top: calc(4.6 * var(--ui));
+  }
+
+  /* The Experience line and the title are one thought, and the tight gap
+     between them says so — but at the sizes both are set at upright they were
+     saying it on top of each other. */
+  .wpkoi-head {
+    gap: max(1.4rem, calc(1 * var(--ui)));
+  }
+
+  .wpkoi-experience {
+    font-size: max(1.6rem, calc(1.05 * var(--ui)));
+  }
+
+  /* ---- The two drawn marks.
+     Both are sized in em off their own label, so the ring, the arrow and the
+     padding all follow from one number — which is why raising it is enough to
+     bring them back to weight. */
+  .wpkoi-visit-text {
+    font-size: max(1.15rem, calc(0.8 * var(--ui)));
+  }
+
+  .wpkoi-visit--more .wpkoi-visit-text {
+    font-size: max(1rem, calc(0.72 * var(--ui)));
+  }
+
+  .wpkoi-title {
+    font-size: 4.2rem;
+  }
+
+  .wpkoi-counter {
+    font-size: max(2.2rem, calc(1.4 * var(--ui)));
+  }
+
+  /* ---- The career row, upright.
+     Four hairlined columns across the foot of a narrow screen is four columns
+     of one word each. Two by two they have the width to be set at a size
+     worth reading, and the mark that closes the row moves under them rather
+     than competing for the same line — there is height here to spend and no
+     width at all. */
+  /* The mark goes above the row it closes, and the row goes to the floor.
+     Stacked the other way round it was the last thing in the section and read
+     as a fifth entry that had lost its column; over the grid and hard right it
+     is what it is on the wide layout — the line the row is answered on — and
+     the four careers get the foot of the section to themselves.
+
+     Order rather than markup: the row is what the section is about and should
+     stay first in the document, whichever end of the block it is drawn at. */
+  .wpkoi-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: max(1.4rem, calc(1.1 * var(--ui)));
+  }
+
+  .wpkoi-footer .wpkoi-visit--more {
+    order: 1;
+    align-self: flex-end;
+  }
+
+  .wpkoi-timeline {
+    order: 2;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex: 0 0 auto;
+    width: 100%;
+    row-gap: max(1.4rem, calc(1.1 * var(--ui)));
+  }
+
+  /* The hairlines now separate the two columns rather than the four entries,
+     so they belong to the right-hand one only. */
+  .wpkoi-timeline-item {
+    padding: 0 max(1rem, calc(0.8 * var(--ui)));
+    border-left: 1px solid rgba(236, 231, 220, 0.16);
+  }
+
+  .wpkoi-timeline-item:nth-child(odd) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .wpkoi-timeline-years {
+    font-size: max(1.05rem, calc(0.72 * var(--ui)));
+  }
+
+  .wpkoi-timeline-title {
+    margin-top: 0.35rem;
+    font-size: max(2.1rem, calc(1.35 * var(--ui)));
+  }
+
+  .wpkoi-timeline-role {
+    margin-top: 0.3rem;
+    font-size: max(0.95rem, calc(0.66 * var(--ui)));
+  }
+}
+
+/* Taller than 9:16 — see the matching note at the foot of portfolio.css for
+   why this ratio and why it is gated.
+   ---------------------------------------------------------------
+   This act has the opposite problem to the portfolio's. .wpkoi-inner is
+   `flex: 1 1 auto`, so it takes every pixel the title block and the footer
+   leave and centres the strip inside it. That is right at the reference
+   shape, where there is little to take. On a 20:9 handset it is several
+   hundred pixels, and the three rows this section is — title, strip, footer
+   — end up marooned at the far ends of a mostly empty column.
+
+   So the strip's row stops absorbing the slack and takes its natural height,
+   and the stack centres as one group instead. Same three rows, same order,
+   same sizes; they simply sit together. flex-grow rather than a max-height
+   because the strip's height is content-driven and a cap would crop it. */
+@media (aspect-ratio <= 9/16) {
+  /* space-evenly, not center. Centring the group fixed the marooning but
+     overshot into the opposite fault: three rows stacked against each other
+     with all the slack pushed outside them. Even distribution puts the same
+     air above, between and below — which is the arrangement the row heights
+     were composed for, just at this screen's scale. */
+  .wpkoi-stack {
+    justify-content: space-evenly;
+  }
+
+  .wpkoi-inner {
+    flex-grow: 0;
+  }
+}

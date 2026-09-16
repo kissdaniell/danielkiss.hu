@@ -1,0 +1,73 @@
+/* The CSS half of the bisection harness (see utils/debug.js). Every rule here
+   is behind a class that only appears when ?off= asks for it, so none of it
+   applies on a normal load.
+
+   !important throughout, and not out of laziness: most of what needs taking
+   away during a bisection is written as an inline style by a running GSAP
+   tween, and an inline style loses to !important and to nothing else. */
+
+#dbg-hud {
+  position: fixed;
+  top: 0.5rem;
+  left: 4rem;
+  z-index: 2147483647;
+  padding: 0.5rem 0.7rem;
+  background: rgba(0, 0, 0, 0.82);
+  color: #7CFF9E;
+  font: 11px/1.45 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  white-space: pre;
+  pointer-events: none;
+  border: 1px solid rgba(124, 255, 158, 0.35);
+}
+
+/* The name's aura. It is a text-shadow on type that the hero scales from four
+   times its size down to one, and a scaled shadow is re-rasterised every time
+   the raster scale changes. */
+html.dbg-glow .sidebar-name-word {
+  text-shadow: none !important;
+}
+
+html.dbg-shadow * {
+  text-shadow: none !important;
+}
+
+/* Every hand-drawn stroke on the page: the SVG filter it is displaced by
+   (feTurbulence + feDisplacementMap, with a SMIL animation re-rolling its seed
+   several times a second) and the keyframes that swap the filter chain on top
+   of that. The hero's own underline is a child of .sidebar-name, so it is
+   inside the element the assembly scales — which means its filter has to be
+   re-evaluated at a new scale on every frame of the scrub. */
+html.dbg-marker [class$="-stroke"],
+html.dbg-marker .hero-underline-stroke {
+  filter: none !important;
+  animation: none !important;
+}
+
+/* Everything filtered, anywhere — including the per-character blur the
+   reveals animate, which is the coarse version of the probe above. */
+html.dbg-blur * {
+  filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Drops every permanent composited layer the page asks for. Worth trying in
+   both directions: too few layers means re-rasterising on every frame, too
+   many means the compositor is managing memory it did not need. */
+html.dbg-willchange * {
+  will-change: auto !important;
+}
+
+html.dbg-mask * {
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+}
+
+html.dbg-grain .grain-overlay {
+  display: none !important;
+}
+
+html.dbg-photoglitch .sidebar-photo-glitch {
+  animation: none !important;
+  opacity: 0 !important;
+}

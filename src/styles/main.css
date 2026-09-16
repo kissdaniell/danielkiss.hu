@@ -1,0 +1,442 @@
+@font-face {
+  font-family: "Satoshi";
+  src: url("/font/Satoshi-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/font/Satoshi-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/font/Satoshi-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/font/Satoshi-Black.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Self-hosted, and deliberately so.
+   ---------------------------------------------------------------
+   Anton is not decoration here: hero, skills, portfolio, awards, wpkoi and
+   transition all gate their first measurement on document.fonts.load() for
+   this face, because their headings are laid out against its metrics. Served
+   from Google Fonts that was two DNS lookups and two TLS handshakes deep in
+   the critical path before the hero could size a single line. From /font it
+   is one same-origin request, and index.html preloads it. */
+@font-face {
+  font-family: "Anton";
+  src: url("/font/Anton.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* One scale to rule the whole layout.
+   ---------------------------------------------------------------
+   The page was composed at 1520x703 (a 2.16:1 window). Everything below
+   is expressed in `rem`, and this one declaration decides what a rem is:
+   1rem = 16px at exactly that reference viewport, scaling proportionally
+   from there. So the composition — column widths, type sizes, the ratio
+   between a heading and the gallery under it — is identical at every
+   size, instead of drifting as individual clamp() minimums and maximums
+   kick in at different moments and break lines that were tuned to fit.
+
+   min() of the two terms, not just the width one, because the pinned
+   100vh sections have to fit vertically too:
+     * 1.0596vw  -> 16px at a 1510px-wide content box (1520 minus the
+                    scrollbar gutter, which is what vw actually resolves
+                    against here).
+     * 2.276vh   -> 16px at 703px tall.
+   Wider-than-reference windows (aspect > 2.16) are height-bound and scale
+   down so nothing overflows; everything from there down to 4:3 is
+   width-bound, which is the common case and reproduces the reference
+   composition exactly. Since every vertical stack fits in 703px at the
+   reference, and the height term guarantees scale <= viewportHeight/703,
+   a pure-rem stack can never overflow at any size.
+
+   The exception, deliberately: vertical rhythm (section gaps, the two
+   gallery heights) keeps a vh term inside a clamp() whose bounds are in
+   rem. Those grow into the extra height a taller-than-reference window
+   offers — up to ~15-25% past their reference proportion — so 4:3 windows
+   read as composed rather than as the reference layout marooned in the
+   middle of a tall empty box. */
+html {
+  font-size: min(1.0596vw, 2.276vh);
+}
+
+:root {
+  --color-bg: #17171a;
+  --color-text: #ff321d;
+  --color-text-muted: #7a352c;
+  --color-accent: #ff321d;
+  --color-light: #ece7dc;
+  --font-body: "Satoshi", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Satoshi", var(--font-body);
+  --font-poster: "Anton", var(--font-display);
+  --font-secondary: "Satoshi", var(--font-body);
+  /* 22vw at the reference viewport; now a fixed proportion of the
+     scale so the content column keeps its exact reference share. */
+  --sidebar-width: 20.76rem;
+  /* How much of the sidebar's content column the portrait takes, leaving the
+     rest for the vertical "14+ years / web" badge beside it. 85% is what the
+     square worked out to at the reference viewport, so this holds that
+     composition while making it independent of the viewport's shape. */
+  --sidebar-photo-width: 85%;
+  /* ...and how tall it is allowed to get while doing it. The portrait fills
+     whatever vertical room the column has left, which on the shapes people
+     actually use lands somewhere between a square and a 2:3 portrait — but a
+     5:4 monitor leaves enough slack to stretch it to a 1:3 sliver, and a
+     cover-cropped face at that ratio is a band, not a photograph. Past this
+     the leftover goes back to the column, which spreads it through its own
+     gaps instead (see justify-content on .site-sidebar).
+
+     32.5rem against a 14.67rem-wide portrait is a floor of about 0.45 on the
+     aspect ratio — wide enough that every common desktop shape stays below it
+     and this never engages. */
+  --sidebar-photo-max-height: 32.5rem;
+  /* Air between the screens in the grid that replaces the portrait from
+     #portfolio on. It comes out of the cells, never out of the grid: the
+     outer edges stay exactly where the portrait's were, so the block keeps
+     the same footprint in the column and only reads as separate pictures
+     rather than one sheet. */
+  --sidebar-grid-gap: 1rem;
+  /* The sidebar column's own rhythm. It stopped being a one-off the moment
+     the social/bio/locale block gained a wrapper: that wrapper has to lay its
+     three children out on exactly the same gap for their heights to come to
+     what they came to as separate children, and the #wpkoi face has to reach
+     across it to centre itself against the nav below. Three places, one
+     number. */
+  --sidebar-gap: 1.1rem;
+}
+
+/* Portrait, and the two different questions it has to answer at once.
+   ---------------------------------------------------------------
+   The formula above holds one composition at every shape by making a rem a
+   share of the window: the width term keeps the content column the same
+   proportion of the frame it is at the reference, and the height term
+   guarantees that a stack composed inside 703 design pixels can never
+   overflow the viewport. Both still matter upright — the sections below are
+   still that composition, and a 100vh section that does not fit in 100vh is
+   the one failure the whole scheme exists to prevent.
+
+   What changes is only the width term, and only because the column got
+   wider: with no sidebar beside it the content has the whole frame, so where
+   the reference gives it 69.6rem between the gutters, upright it is
+   100vw - 4rem. Setting those equal gives 1rem = 1.359vw. The height term is
+   untouched, which is what keeps the sections whole.
+
+   That leaves the type small on a handset, and honestly so — a wide
+   composition rendered upright is small until the sections themselves are
+   redrawn for it, which is work still to come. What must not be small is the
+   furniture this layout adds: the bar, the sheet behind it and the upright
+   opening frame are not part of that composition, they are how the page is
+   used, and they are sized to be read rather than to hold a proportion. Hence
+   a second scale they alone are written against, and it is the ordinary way a
+   page is sized on a handset: a share of the width with a floor and a
+   ceiling. */
+@media (aspect-ratio < 4/3) {
+  html {
+    font-size: min(1.359vw, 2.276vh);
+  }
+
+  :root {
+    /* There is no column beside the content any more, so every gutter reserved
+       for one closes. One custom property does it: four stylesheets write
+       `calc(var(--sidebar-width) + …)` into a section's own padding, and this
+       is the term they all share. */
+    --sidebar-width: 0rem;
+
+    /* ...and the scale the portrait-only furniture is written against. Every
+       size in the bar, the sheet and the upright frame is `calc(N * var(--ui))`
+       where the wide layout would have written `Nrem` — so those three read
+       the same at any upright shape while the page behind them keeps the
+       composition's own scale. */
+    --ui: clamp(12px, 3.2vw, 18px);
+  }
+
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    scrollbar-color: var(--color-accent) var(--color-bg);
+    scrollbar-width: thin;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    /* Nothing on this page is ever meant to be reachable sideways, and
+       several things are transiently wider than the frame while they animate
+       — the liquid canvas mid-splash, the closing field being dragged. Those
+       are all inside boxes that clip them, but a scrubbed tween that
+       overshoots by a pixel between two frames still flashes a scrollbar.
+
+       `hidden` rather than `clip`, and the reason is the minifier rather than
+       the browser. On the root element the two mean the same thing — overflow
+       on <html> propagates to the viewport, and the viewport cannot be
+       `clip`, so it resolves to `hidden` regardless. But oxc folds whichever
+       one is written here together with the overflow-y above into the
+       two-value shorthand, and `overflow: clip auto` is only understood from
+       Chrome 90, where `overflow: hidden auto` has been read since Chrome 68.
+       A browser that does not understand the shorthand drops the whole
+       declaration — which is not a slightly weaker clip, it is no clip at all
+       and a page that pans sideways. Not a hypothetical: that is what the
+       built stylesheet was serving. */
+    overflow-x: hidden;
+}
+
+/* The sideways scrollbar that appears on a page with nothing to scroll to.
+   ---------------------------------------------------------------
+   ScrollTrigger.normalizeScroll (see main.js) takes the vertical axis for
+   itself and hands the horizontal one back to the browser, writing
+   `touch-action: pan-x pinch-zoom` inline on both of these elements. That is
+   the right default for a page that scrolls sideways. This one does not — the
+   root is overflow-x: hidden — so every sideways drag opened a native scroll
+   gesture that painted a scrollbar and then had nowhere to go.
+
+   Declared here, with !important, rather than assigned in JS after the
+   normalizer runs. That was tried first and it is a race that cannot be won
+   cleanly: the value is rewritten from the normalizer's onEnable, which fires
+   again on every re-enable and after refreshes, and winning it depends on
+   listener registration order inside GSAP. A stylesheet beats an inline style
+   unconditionally and has no ordering to lose.
+
+   `pinch-zoom` and not `none`: no native panning on either axis — GSAP is
+   driving one and the other does not exist — while zooming stays available.
+   Whether a reader who has zoomed in can then pan what they zoomed into is
+   the browser's call about the visual viewport rather than this declaration's,
+   and is not something this environment could test. */
+@media (hover: none) and (pointer: coarse) {
+  html,
+  body {
+    touch-action: pinch-zoom !important;
+  }
+}
+
+/* Taps on the things that are meant to be tapped.
+   ---------------------------------------------------------------
+   The rule above takes panning away from the whole document, and GSAP's
+   normalizer calls preventDefault on the touches it drives the scroll with.
+   Between them a browser can decide a tap on a control was part of a gesture
+   it already handled and never synthesise the click — which is what a close
+   button that needs several presses before it answers looks like. Firefox for
+   Android is where this showed; Chrome was unaffected.
+
+   `manipulation` says the opposite for these elements specifically: no
+   double-tap zoom to wait for, nothing to disambiguate, treat the tap as a
+   tap. It is scoped to actual controls, so nothing about the page's scrolling
+   changes. */
+@media (hover: none) and (pointer: coarse) {
+  a,
+  button,
+  .topbar-toggle,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+}
+
+.section {
+  /* svh — see the note on .contact in contact.css. */
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4rem 2rem;
+  padding-right: calc(var(--sidebar-width) + 2rem);
+}
+
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  overflow: hidden;
+  mix-blend-mode: luminosity;
+    opacity: 0.12;
+}
+
+.grain-overlay video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* It is fetched after load rather than by the parser (see the element's
+     own note in index.html), so it has to arrive rather than appear. Long
+     enough to read as the texture settling in, at an opacity where the
+     difference between the two is most of a second either way. */
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+
+.grain-overlay video.is-attached {
+  opacity: 1;
+}
+
+/* One value for the whole page upright, rather than the two the wide layout
+   steps between. Up there the grain takes over the texture the liquid layer
+   was providing as that layer retires (see ui/liquidRetire.js); below 4:3
+   that layer leaves at the end of the opening frame and there is nothing to
+   hand over from, so the grain carries the page on its own from the first
+   screen to the last. After the rule above rather than beside the rest of the
+   portrait block, because the two have the same specificity and the later one
+   is the one that counts. */
+@media (aspect-ratio < 4/3) {
+  .grain-overlay {
+    opacity: 0.2;
+  }
+}
+
+.corner-marks {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+
+.corner-mark {
+  position: absolute;
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.corner-mark::before,
+.corner-mark::after {
+  content: "";
+  position: absolute;
+  background: var(--color-light);
+  opacity: 0.6;
+}
+
+.corner-mark::before {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+}
+
+.corner-mark::after {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.corner-mark--tl {
+  top: 1.25rem;
+  left: 1.25rem;
+}
+
+.corner-mark--tr {
+  top: 1.25rem;
+  right: 1.25rem;
+}
+
+.corner-mark--bl {
+  bottom: 1.25rem;
+  left: 1.25rem;
+}
+
+/* The fourth corner belongs to the readout and the sidebar's edge up here, so
+   the frame is deliberately left open at it. See the portrait block below. */
+.corner-mark--br {
+  display: none;
+  bottom: 1.25rem;
+  right: 1.25rem;
+}
+
+@media (aspect-ratio < 4/3) {
+  /* Both of the things that were using this corner are gone below 4:3 — the
+     readout is withdrawn (see ruler.css) and there is no column — so the
+     frame closes, and ui/cornerMarks.js takes the round trip through four
+     rather than three.
+
+     Larger and a shade stronger with it. These are a frame drawn around the
+     page, and a frame set at nine pixels on the composition's own upright
+     scale is not one anybody sees. */
+  .corner-mark--br {
+    display: block;
+  }
+
+  .corner-mark {
+    width: max(1.1rem, calc(0.95 * var(--ui)));
+    height: max(1.1rem, calc(0.95 * var(--ui)));
+  }
+
+  .corner-mark::before,
+  .corner-mark::after {
+    opacity: 0.75;
+  }
+
+  /* Right out on the corners. The wide layout can hold them a comfortable
+     distance in because nothing else is up there; upright the bar runs across
+     the top of the screen at the same inset, and a mark set level with the
+     hamburger reads as part of it. Out at the very edge they are what they are
+     — the four points the frame is pinned by — and the bar's own contents step
+     in off them (see .site-topbar in sidebar.css). */
+  .corner-mark--tl,
+  .corner-mark--tr {
+    top: calc(0.5 * var(--ui));
+  }
+
+  .corner-mark--bl,
+  .corner-mark--br {
+    bottom: calc(0.5 * var(--ui));
+  }
+
+  .corner-mark--tl,
+  .corner-mark--bl {
+    left: calc(0.5 * var(--ui));
+  }
+
+  .corner-mark--tr,
+  .corner-mark--br {
+    right: calc(0.5 * var(--ui));
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+#smooth-wrapper {z-index: 1;}

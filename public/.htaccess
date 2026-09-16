@@ -1,0 +1,141 @@
+# danielkiss.hu — Apache configuration for the built site.
+#
+# Lives in public/ so that every `npm run build` copies it into dist/ and it
+# ships with the deploy rather than being remembered by hand.
+#
+# Every block is wrapped in <IfModule>. Shared hosting varies in what it
+# enables, and a directive whose module is missing does not get ignored — it
+# returns 500 for the whole site. This way a host without mod_brotli simply
+# does not compress with brotli.
+
+# ----------------------------------------------------------------------------
+# Canonical origin: https, no www.
+#
+# It has to match <link rel="canonical"> and the og:url in index.html, which
+# both say https://danielkiss.hu/ — two spellings of the same page that both
+# answer 200 split the ranking between them.
+# ----------------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # X-Forwarded-Proto as well as HTTPS, and this matters: most shared hosts
+  # terminate TLS at a proxy, so %{HTTPS} is "off" inside Apache even on a
+  # request that arrived encrypted. Testing HTTPS alone there redirects https
+  # to https, forever.
+  #
+  # If the site does end up in a redirect loop, this block is the cause —
+  # comment it out, confirm the site loads, then ask the host which variable
+  # marks TLS on their stack.
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^ https://danielkiss.hu%{REQUEST_URI} [L,R=301]
+
+  RewriteCond %{HTTP_HOST} ^www\. [NC]
+  RewriteRule ^ https://danielkiss.hu%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Deliberately no SPA fallback. This is one page with in-page anchors, not a
+# router — rewriting every unknown path to index.html would answer 200 for
+# URLs that do not exist, which is the soft-404 pattern search engines
+# penalise. A missing path should 404.
+
+# ----------------------------------------------------------------------------
+# Compression. This is Lighthouse's "Enable text compression".
+# ----------------------------------------------------------------------------
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/css text/plain text/xml
+  AddOutputFilterByType BROTLI_COMPRESS application/javascript application/json
+  AddOutputFilterByType BROTLI_COMPRESS image/svg+xml application/xml
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml application/xml
+</IfModule>
+
+# What must never be compressed. woff2, webp, mp4, jpg and png carry their own
+# compression; running deflate over them spends CPU on both ends to make the
+# file very slightly larger.
+<IfModule mod_setenvif.c>
+  SetEnvIfNoCase Request_URI \.(?:woff2?|webp|mp4|jpe?g|png|ico|gz|br)$ no-gzip dont-vary
+</IfModule>
+
+# ----------------------------------------------------------------------------
+# Caching.
+#
+# Two populations of file, and they want opposite things:
+#
+#   /assets/*  Vite puts a content hash in the filename, so a given URL can
+#              never change meaning. Cache it for a year and never revalidate.
+#
+#   index.html The entry point, and the only thing that knows the current
+#              hashed filenames. It must be revalidated every visit or a
+#              redeploy is invisible to anyone who has been here before.
+#
+# Everything in /font and /img is unhashed, so it sits in between: long enough
+# to be worth caching, short enough that replacing a file is not permanent.
+# Rename rather than overwrite if one has to change sooner.
+# ----------------------------------------------------------------------------
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  <FilesMatch "\.(woff2?|webp|jpe?g|png|gif|svg|ico|mp4)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+
+  # no-cache, not no-store: the browser may keep the file, but it must ask
+  # whether it is still current before using it. That is what makes a redeploy
+  # visible on the next visit — index.html is the only thing that knows which
+  # hashed asset filenames are the live ones, so a stale copy of it means a
+  # stale copy of the whole site.
+  <FilesMatch "\.(html|xml|txt)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+
+  # Cheap, standard hardening. None of it affects how the page renders.
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always unset X-Powered-By
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css                  "access plus 1 year"
+  ExpiresByType application/javascript    "access plus 1 year"
+  ExpiresByType font/woff2                "access plus 1 month"
+  ExpiresByType image/webp                "access plus 1 month"
+  ExpiresByType video/mp4                 "access plus 1 month"
+  # text/html deliberately absent: mod_headers sets no-cache for it above, and
+  # two modules writing Cache-Control for the same file is a coin toss.
+</IfModule>
+
+# ----------------------------------------------------------------------------
+# MIME types, for hosts whose Apache predates some of these. Serving woff2 or
+# webp as octet-stream makes the browser refuse them.
+# ----------------------------------------------------------------------------
+<IfModule mod_mime.c>
+  AddType font/woff2                  .woff2
+  AddType image/webp                  .webp
+  AddType image/svg+xml               .svg
+  AddType video/mp4                   .mp4
+  AddType application/manifest+json   .webmanifest
+  AddCharset UTF-8                    .html .css .js .json .xml .txt
+</IfModule>
+
+# ----------------------------------------------------------------------------
+# Housekeeping.
+# ----------------------------------------------------------------------------
+Options -Indexes
+
+# Dotfiles, should one ever be uploaded by accident. Guarded because Require
+# is Apache 2.4 syntax (mod_authz_core) and would 500 an Apache 2.2 host.
+<IfModule mod_authz_core.c>
+  <FilesMatch "^\.">
+    Require all denied
+  </FilesMatch>
+</IfModule>
+
+DirectoryIndex index.html

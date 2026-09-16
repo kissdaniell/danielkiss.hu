@@ -1,0 +1,232 @@
+/* The opening plate.
+   ---------------------------------------------------------------
+   Everything here is the look; what must be true before any of it arrives —
+   that the plate covers the page and that it uncovers itself on its own — is
+   inline in the document head. See the note there.
+
+   Set in the page's own units rather than in vw, which is what the reference
+   this grew out of used. A rem here is the composition's own scale (see the
+   note at the top of main.css), so the plate is drawn at exactly the
+   proportions the page behind it is — and upright, where that scale is small,
+   it moves onto --ui like the rest of the furniture does. */
+
+.preloader {
+  overflow: hidden;
+  /* The plate leaves by sliding off the top, which is the same gesture the
+     portrait menu arrives with, run backwards. */
+  will-change: transform;
+}
+
+.preloader-inner {
+  position: absolute;
+  inset: 0;
+}
+
+/* ---- Who this is, in the corner the page's own line sits in. */
+.preloader-title {
+  position: absolute;
+  top: 2.4rem;
+  left: 2.4rem;
+  padding-left: 1.6rem;
+  font-family: var(--font-poster);
+  font-size: 1.5rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-light);
+}
+
+/* Drawn on from nothing, left edge first — the one piece of the plate that
+   moves horizontally, so the eye starts there. */
+.preloader-title-mark {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0.85rem;
+  height: 0.85rem;
+  background: var(--color-accent);
+  transform: translateY(-50%) scaleX(0);
+  transform-origin: left center;
+}
+
+.preloader-title-text .char {
+  display: inline-block;
+}
+
+/* ---- A fan of the work, in the corner the portrait holds.
+   Square, because the pictures are: these are the small gallery exports and
+   they are 300 by 300. In a landscape box the fill crops the top and bottom
+   off every one of them, which on a screenshot of a page is where the page
+   is. Same box for the accent beneath and the cards above — they are all
+   inset:0 on this one element, so the shape is stated once. */
+.preloader-stage {
+  position: absolute;
+  top: 2.4rem;
+  right: 2.4rem;
+  width: 9rem;
+  height: 9rem;
+  transform: rotate(-4deg);
+}
+
+/* The accent sitting under the stack and slightly out of true with it, so the
+   pile reads as laid on something rather than floating. */
+.preloader-stage-accent {
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent);
+  transform: rotate(-8deg) translate(9%, 9%);
+}
+
+.preloader-stage-cards {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.preloader-card {
+  position: absolute;
+  inset: 0;
+  padding: 0.28rem;
+  background: var(--color-light);
+  transform-origin: 50% 50%;
+}
+
+.preloader-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---- The count and the rule it travels. */
+.preloader-foot {
+  position: absolute;
+  left: 2.4rem;
+  right: 2.4rem;
+  bottom: 2.2rem;
+  display: flex;
+  align-items: flex-end;
+  gap: 2rem;
+}
+
+/* A tabular figure set, built by hand, because the display face does not have
+   one to switch to.
+   ---------------------------------------------------------------
+   Anton is very nearly tabular already: every numeral advances 0.494em except
+   the 1, which advances 0.331. That single exception is the whole of the
+   problem. A count of three digits changes width by 0.164em — twenty-three
+   pixels at the size this is set — every time a 1 enters or leaves any of the
+   three positions, which on the way from 000 to 100 is most of the way. Sized
+   to its content, that moved the rule beside it and slid every tick on it;
+   fixed and set to one side, it stopped moving the rule but the number
+   itself now shuffled within the box, which is what a fixed width does to a
+   ragged string. Both are the same fault seen from different ends.
+
+   A cell per digit ends it: each numeral is centred in a box the width of the
+   widest one, so a 1 sits with a little air either side and nothing before or
+   after it moves. tabular-nums stays declared for any face that does have the
+   feature — with it, the cells simply hold exactly what the glyphs measure. */
+.preloader-count {
+  flex: 0 0 auto;
+  font-family: var(--font-poster);
+  font-size: 9rem;
+  line-height: 0.72;
+  color: var(--color-light);
+  font-variant-numeric: tabular-nums;
+}
+
+.preloader-digit {
+  display: inline-block;
+  /* The widest numeral, plus the tracking the line used to carry as
+     letter-spacing — which cannot live on the parent any more, since it would
+     be added after each cell rather than inside it. */
+  width: 0.56em;
+  text-align: center;
+}
+
+.preloader-ruler {
+  position: relative;
+  flex: 1 1 auto;
+  height: 2rem;
+  min-width: 0;
+}
+
+/* Same instrument the page's own frame is drawn with — see styles/ruler.css.
+   Hairlines, a taller one every tenth. */
+.preloader-tick {
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-light);
+  opacity: 0.18;
+}
+
+.preloader-tick--major {
+  height: 1rem;
+  opacity: 0.5;
+}
+
+.preloader-tick--minor {
+  height: 0.5rem;
+}
+
+.preloader-marker {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  height: 2rem;
+  background: var(--color-accent);
+  transform: translateX(-50%);
+}
+
+/* ---- Upright.
+   The composition's scale is small there and this is furniture, not
+   composition — the same distinction --ui exists for everywhere else on the
+   page. Nothing is dropped: the three marks sit in three different corners
+   and never come near each other, so they only have to be re-sized, not
+   re-arranged. */
+@media (aspect-ratio < 4/3) {
+  .preloader-title {
+    top: calc(1.6 * var(--ui));
+    left: calc(1.4 * var(--ui));
+    padding-left: calc(1.5 * var(--ui));
+    font-size: calc(1.05 * var(--ui));
+  }
+
+  .preloader-title-mark {
+    width: calc(0.7 * var(--ui));
+    height: calc(0.7 * var(--ui));
+  }
+
+  .preloader-stage {
+    top: calc(1.5 * var(--ui));
+    right: calc(1.4 * var(--ui));
+    width: calc(6 * var(--ui));
+    height: calc(6 * var(--ui));
+  }
+
+  .preloader-foot {
+    left: calc(1.4 * var(--ui));
+    right: calc(1.4 * var(--ui));
+    bottom: calc(1.6 * var(--ui));
+    gap: calc(1.2 * var(--ui));
+  }
+
+  .preloader-count {
+    font-size: calc(5.2 * var(--ui));
+  }
+
+  .preloader-ruler,
+  .preloader-marker {
+    height: calc(1.4 * var(--ui));
+  }
+
+  .preloader-tick--major {
+    height: calc(0.7 * var(--ui));
+  }
+
+  .preloader-tick--minor {
+    height: calc(0.35 * var(--ui));
+  }
+}

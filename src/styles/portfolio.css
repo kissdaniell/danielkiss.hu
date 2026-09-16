@@ -1,0 +1,616 @@
+@font-face {
+  font-family: "Higher Jump";
+  /* woff2 only: every browser that can run this page supports it, and the
+     .ttf fallback was a 1.8 MB file sitting in the deploy for no one. */
+  src: url("/font/higher-jump.regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.portfolio {
+  position: relative;
+  /* svh, not vh: on a phone `vh` is the viewport with the address bar
+     hidden, so a box one `100vh` tall has its last band below the fold for
+     as long as the bar is up — which is the whole time the reader is first
+     looking at it. `svh` is the same measure taken with the bar shown. It
+     resolves identically to `vh` anywhere without a retracting toolbar, so
+     the wide layout is untouched. (No `vh` fallback line: the minifier drops
+     it as redundant for the browsers this is built for, which all have svh.) */
+  min-height: 100svh;
+  overflow: hidden;
+  justify-content: center;
+  padding-top: clamp(3rem, 9vh, 5rem);
+}
+
+/* Wraps the heading/gallery/subheading trio — the pin's original content —
+   so the scroll-driven transition in portfolio.js can fade/blur/scale it
+   away as one unit once .portfolio-scene-two is ready to take over, rather
+   than needing to re-animate every character of three separate headings
+   individually. */
+.portfolio-scene-one {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: clamp(3rem, 10vh, 5.5rem);
+}
+
+.portfolio-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  column-gap: 0.4em;
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 5.5rem;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+
+.portfolio-heading-line {
+  display: inline-block;
+}
+
+.portfolio-heading-line--light {
+  color: var(--color-light);
+}
+
+.portfolio-heading-line-wrap {
+  position: relative;
+  display: inline-block;
+  perspective: 500px;
+}
+
+.portfolio-heading-line--accent {
+  color: var(--color-accent);
+}
+
+.portfolio-heading-underline {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  height: 0.3em;
+  overflow: visible;
+}
+
+.portfolio-heading-underline-stroke {
+  fill: none;
+  stroke: var(--color-light);
+  stroke-width: 10;
+  stroke-linecap: round;
+  filter: url(#markerRough);
+  animation: hero-underline-glitch 2.4s steps(1, jump-end) infinite;
+}
+
+.portfolio-gallery {
+  position: relative;
+  width: 100%;
+  height: clamp(11rem, 32vh, 16.2rem);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.portfolio-gallery-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.portfolio-subheading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  column-gap: 0.35em;
+  width: 100%;
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 3rem;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+
+.portfolio-subheading-line {
+  display: inline-block;
+}
+
+.portfolio-subheading-line--light {
+  color: var(--color-light);
+}
+
+.portfolio-subheading-line--accent {
+  color: var(--color-accent);
+}
+
+.portfolio-subheading-line-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.portfolio-subheading-underline {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  height: 0.3em;
+  overflow: visible;
+}
+
+.portfolio-subheading-underline-stroke {
+  fill: none;
+  stroke: var(--color-light);
+  stroke-width: 8;
+  stroke-linecap: round;
+  filter: url(#markerRough);
+  animation: hero-underline-glitch 2.4s steps(1, jump-end) infinite;
+}
+
+/* The quiet line under the claim above it, in the same voice the captions
+   elsewhere on the page speak — the panel's own "themes on wordpress.org"
+   line, the sidebar's "INDEX — PORTFOLIO / 2026". Right-aligned to sit under
+   the subheading's own edge, which is where the eye already is.
+   Held back in the colour rather than with opacity, because portfolio.js
+   animates this element's opacity as it reveals. */
+.portfolio-closing {
+  width: 100%;
+}
+
+.portfolio-claim {
+  /* Buys back the ~14px the subheading's own marker underline hangs below its
+     box, so the visible gap is about 24px rather than the number here. */
+  margin-top: 2.4rem;
+  width: 100%;
+  text-align: right;
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: color-mix(in srgb, var(--color-light) 60%, transparent);
+}
+
+.portfolio-graffiti {
+  /* top and left are set from JS (positionGraffiti) — top against the
+     gallery's own rendered box (its height is a clamp(), so any fixed CSS
+     offset would drift out of sync with it), left against where "Some of
+     these" actually starts (it's right-aligned, so its start position
+     shifts with viewport width and text length alike). Side-by-side flex
+     row, not stacked: the arrow used to be absolutely positioned on top of
+     the text (sized to fill the very box the text sat inside), which read
+     as the two overlapping rather than sitting next to each other. */
+  position: absolute;
+  display: flex;
+  align-items: flex-end;
+  column-gap: 0.7em;
+  pointer-events: none;
+}
+
+.portfolio-graffiti-text {
+  font-family: "Higher Jump", var(--font-secondary);
+  font-size: 1.35rem;
+  color: var(--color-light);
+  white-space: nowrap;
+}
+
+.portfolio-graffiti-arrow-img {
+  display: block;
+  width: 4.246rem;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+      margin-bottom: 1rem;
+}
+
+/* Second act: overlays the same pinned area scene-one occupies (inset:0
+   against .portfolio, which is the positioned ancestor) rather than
+   sitting below it in normal flow — it needs to visually replace
+   scene-one within the same 100vh dwell, not add extra scroll height.
+   Left-aligned like scene-one, not centered: this is a continuation of the
+   same asymmetric layout language, not a separate centered "slide".
+
+   The padding here duplicates .section's own (padding: 4rem 2rem;
+   padding-right: sidebar reservation) plus .portfolio's own padding-top
+   override, rather than inheriting it — `inset` positions an absolutely
+   positioned box against the containing block's *padding edge*, i.e. the
+   outer boundary of .portfolio's padding, not the inner content edge past
+   it, so inset:0 alone ignores .portfolio's padding entirely. Without this
+   duplication scene-two's content started flush at .portfolio's true left
+   edge (past the sidebar's reserved margin, and past where scene-one's own
+   content starts) and "More Work" landed under the sidebar on the right. */
+.portfolio-scene-two {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 4rem 2rem;
+  padding-right: calc(var(--sidebar-width) + 2rem);
+  padding-top: clamp(3rem, 9vh, 5rem);
+  padding-bottom: clamp(1.5rem, 4vh, 2.4rem);
+  /* Both scenes occupy the same box for the whole pin — this one is
+     absolutely positioned over the other — so whichever is currently
+     invisible has to stop answering the pointer, or it sits between the
+     reader and the scene they can actually see. That was the state before:
+     scene two was permanently inert, so selecting its text or clicking
+     anywhere in it landed on scene one, still there underneath at opacity 0.
+     portfolio.js flips the class as the handover happens. */
+  pointer-events: none;
+}
+
+.portfolio.is-scene-two .portfolio-scene-one {
+  pointer-events: none;
+}
+
+.portfolio.is-scene-two .portfolio-scene-two {
+  pointer-events: auto;
+}
+
+.portfolio-scene-two-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* flex-start, not the default stretch: .portfolio-experience-wrap and
+     .portfolio-brand-wrap rely on shrink-to-fit sizing (display:
+     inline-block) so their underline SVGs (width: 100% of the wrap) match
+     the text's own width — a flex column's default align-items:stretch
+     overrides that inline-block sizing and stretches every child to the
+     container's full width, which is what was blowing both underlines out
+     to nearly the whole viewport. */
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(2rem, 6.5vh, 3.6rem);
+  padding-left: 5.662rem;
+  padding-bottom: 3.775rem;
+}
+
+.portfolio-scene-two-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 0 0 1.888rem 3.775rem;
+}
+
+.portfolio-experience-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.portfolio-experience {
+  /* No opacity here — portfolio.js owns it fully (gsap.set hides it at 0,
+     the reveal tween targets 0.75, its intended resting dimness), the same
+     way every other entrance-animated element in this file works. Setting
+     it here too would just be dead weight under the inline style GSAP
+     writes. */
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 1.2rem;
+  color: var(--color-light);
+}
+
+.portfolio-experience-sep {
+  opacity: 0.5;
+}
+
+.portfolio-experience-arrow {
+  opacity: 0.5;
+}
+
+.portfolio-experience-now {
+  font-family: "Higher Jump", var(--font-secondary);
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 1.3em;
+  color: var(--color-accent);
+  opacity: 1;
+}
+
+.portfolio-experience-underline {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  height: 0.6em;
+  overflow: visible;
+}
+
+.portfolio-experience-underline-stroke {
+  fill: none;
+  stroke: var(--color-light);
+  stroke-width: 6;
+  stroke-linecap: round;
+  filter: url(#markerRough);
+  animation: hero-underline-glitch 2.4s steps(1, jump-end) infinite;
+}
+
+.portfolio-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  column-gap: 1.25rem;
+}
+
+.portfolio-brand-arrow-img {
+  display: block;
+  width: 5.662rem;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  flex-shrink: 0;
+  /* The source image points up-right (tail bottom-left, head top-right);
+     rotated here so it curves down toward WPKoi instead, like it's
+     gesturing at the brand name rather than at the subtitle below. */
+  transform: rotate(135deg);
+}
+
+.portfolio-brand-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.portfolio-brand {
+  /* By far the largest number in the stylesheet — 3.3x .portfolio-heading's
+     own size — and deliberately so: this is meant to read as the single
+     biggest, most dominant mark on the page, more so than "Made Some.
+     Broke Some…" itself. Like every other size here it is a plain rem, so
+     it holds that exact ratio at every viewport (see the scale note at the
+     top of main.css); it used to be a vw-based clamp that grew faster than
+     the heading did and changed the relationship between the two from one
+     window size to the next. */
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 17.93rem;
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+  color: var(--color-accent);
+}
+
+.portfolio-brand-underline {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  height: 1.33em;
+  overflow: visible;
+}
+
+.portfolio-brand-underline-stroke {
+  fill: none;
+  stroke: var(--color-light);
+  stroke-width: 20;
+  stroke-linecap: round;
+  filter: url(#markerRough);
+  animation: hero-underline-glitch 2.4s steps(1, jump-end) infinite;
+}
+
+/* Baseline-aligned so the small note reads as sitting on the same line the
+   poster type does, rather than being centred against a much taller box. */
+.portfolio-brand-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 1.7rem;
+  row-gap: 0.3rem;
+}
+
+.portfolio-brand-subtitle {
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 2.8rem;
+  letter-spacing: 0.01em;
+  color: var(--color-light);
+}
+
+/* The same quiet caption voice the rest of the page uses for its footnotes —
+   the sidebar's "INDEX — PORTFOLIO / 2026", the skills panel's own line.
+   Held back in the colour rather than with opacity, because portfolio.js
+   animates this element's opacity as act two reveals it. */
+.portfolio-brand-note {
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: color-mix(in srgb, var(--color-light) 60%, transparent);
+}
+
+.portfolio-stats {
+  /* Tight, grouped cluster rather than three items spread across the row —
+     the wide clamp() gap used before was reading as "spread to the edges"
+     even though the group itself was already shrink-to-fit sized. */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 1.6rem;
+  row-gap: 0.5rem;
+}
+
+.portfolio-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.95rem;
+  color: var(--color-light);
+}
+
+/* Same "big mark + two stacked label lines" shape as .skills-stat/
+   .skills-stat-label — reused here instead of a single inline row so
+   Founded/Aug 2018 and the two icon rows all read the same way. */
+.portfolio-stat-lines {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.portfolio-stat-line--accent {
+  color: var(--color-accent);
+}
+
+.portfolio-stat-icon {
+  /* Fixed, generous size rather than relative to the (small) stat text —
+     an em-based size made these nearly invisible at ~10px. */
+  width: 2.265rem;
+  height: 2.265rem;
+  flex-shrink: 0;
+  color: var(--color-light);
+}
+
+.portfolio-more-work {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.portfolio-more-work-text {
+  font-family: "Higher Jump", var(--font-secondary);
+  font-size: 1.6rem;
+  color: var(--color-light);
+}
+
+.portfolio-more-work-arrow {
+  display: block;
+  width: 1.887rem;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  /* Same up-right-pointing source as the other two arrows on this page,
+     rotated to point straight down (150deg instead of an exact 135deg/
+     due-south so it keeps a touch of the same rightward lean the brand
+     arrow has, reading as "the same gesture" rather than a different mark). */
+  transform: rotate(150deg);
+  rotate: 120deg !important;
+}
+
+
+/* ===============================================================
+   Portrait: narrower than 4:3.
+   ===============================================================
+   Two scales are in play below (see the note on --ui in main.css): `rem` is
+   the page's composition, which upright is small, and `var(--ui)` is the
+   reading scale the portrait furniture is written against. Anything that has
+   to hold a proportion — a heading spanning the frame — stays on the first.
+   Anything that is a label, a note or a figure the reader is meant to take in
+   rather than admire gets `max()` of both: the composition's answer while
+   there is room for it, and a legibility floor once there is not.
+   =============================================================== */
+@media (aspect-ratio < 4/3) {
+  /* ---- Scene one: both couplets break, and each second line steps out from
+     under its first. A wrapped line that starts on the same rule as the one
+     above it reads as an accident; one that starts a little past it reads as
+     the same hand carrying on. */
+  .portfolio-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    font-size: 6.4rem;
+  }
+
+  .portfolio-heading .portfolio-heading-line-wrap {
+    margin-left: max(2.6rem, calc(2 * var(--ui)));
+  }
+
+  .portfolio-subheading {
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-start;
+    font-size: 3.5rem;
+  }
+
+  .portfolio-subheading .portfolio-subheading-line-wrap {
+    margin-right: max(1.8rem, calc(1.4 * var(--ui)));
+  }
+
+  /* The one flat statement in the section, and it was set as a whisper. Given
+     its own size and a little of its colour back it holds the foot of the
+     scene instead of trailing off it. */
+  .portfolio-claim {
+    margin-top: max(2.4rem, calc(1.8 * var(--ui)));
+    font-size: max(1.35rem, calc(0.9 * var(--ui)));
+    color: color-mix(in srgb, var(--color-light) 78%, transparent);
+  }
+
+  /* ---- Scene two: the same treatment for the cluster at its foot. Three
+     short facts on one line is a row that reads as a caption; down the page
+     at size, they read as three facts. */
+  .portfolio-stats {
+    flex-direction: column;
+    align-items: flex-start;
+    row-gap: max(0.9rem, calc(0.7 * var(--ui)));
+  }
+
+  .portfolio-stat {
+    font-size: max(1.25rem, calc(0.85 * var(--ui)));
+  }
+
+  /* The one entry of the three that is two lines rather than one. At the
+     row's own size it reads as a single fact broken in half by accident;
+     given a size of its own it reads as the pair it is. */
+  .portfolio-stat-lines {
+    font-size: max(1.45rem, calc(1 * var(--ui)));
+    line-height: 1.25;
+  }
+
+  .portfolio-experience {
+    font-size: max(1.6rem, calc(1.05 * var(--ui)));
+  }
+
+  .portfolio-brand-note {
+    font-size: max(1.3rem, calc(0.88 * var(--ui)));
+  }
+}
+
+/* Taller than 9:16 — which is every handset made in the last several years,
+   and a shape this composition was never drawn for.
+   ---------------------------------------------------------------
+   The portrait rhythm above is built on --ui, and --ui is
+   clamp(12px, 3.2vw, 18px): a *width*. Hand a 393px-wide screen another two
+   hundred pixels of height and not one of those gaps moves — so the whole
+   stack keeps clustering into the middle of a longer and longer frame with
+   dead bands above and below it. What is missing is a height term.
+
+   Added inside the existing max() rather than replacing it, and gated on the
+   ratio as well, so a flatter portrait — a tablet at 3:4, a short phone in a
+   split view — keeps exactly the numbers it has now: on those the --ui term
+   is still the larger and max() goes on picking it. Nothing here changes a
+   size, a face or a colour; only the air between the blocks. */
+@media (aspect-ratio <= 9/16) {
+  .portfolio-scene-two-main {
+    row-gap: max(1rem, 3vh);
+  }
+
+  /* The two poster lines wrap onto separate flex rows, so this is the space
+     between them and not a line-height — which is what we want, because
+     line-height at 1.05 is holding the caps tight *within* each line and
+     should keep doing that. Small: they are one sentence broken in two and
+     have to keep reading as one. */
+  .portfolio-heading {
+    row-gap: 1.2vh;
+  }
+
+  .portfolio-claim {
+    margin-top: max(2.4rem, calc(1.8 * var(--ui)), 5.5vh);
+  }
+
+  .portfolio-stats {
+    row-gap: max(0.9rem, calc(0.7 * var(--ui)), 2.6vh);
+  }
+
+  /* The two-line stat blocks read as one dense clot at 1.25 on a screen this
+     long; the extra leading is what makes them a list again. */
+  .portfolio-stat-lines {
+    line-height: 1.45;
+  }
+
+  .portfolio-experience,
+  .portfolio-brand-note {
+    margin-top: max(0px, 2vh);
+  }
+}

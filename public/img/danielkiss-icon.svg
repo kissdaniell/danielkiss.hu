@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+
+  <!-- Red circular background -->
+  <circle cx="512" cy="512" r="500" fill="#ff321d"></circle>
+
+  <!-- Black eye -->
+  <path d="M 150 512
+       C 245 350, 380 275, 512 275
+       C 644 275, 779 350, 874 512
+       C 779 674, 644 749, 512 749
+       C 380 749, 245 674, 150 512 Z" fill="#17171a"></path>
+
+  <!-- Pupil -->
+  <circle cx="512" cy="512" r="145" fill="#ff321d"></circle>
+
+  <!-- Inner pupil -->
+  <circle cx="512" cy="512" r="82" fill="#17171a"></circle>
+
+  <!-- Highlight -->
+  <circle cx="558" cy="465" r="24" fill="#ff321d"></circle>
+</svg>

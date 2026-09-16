@@ -1,0 +1,1343 @@
+.site-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  z-index: 40;
+  padding: 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sidebar-gap);
+  /* Inert almost always: the portrait's row grows into any free space before
+     this can see it. It only has anything to distribute once that row hits
+     its own height cap, and then spreading the remainder through the column's
+     gaps is a better answer than either a hole above the email or a portrait
+     stretched past the shape of a photograph. */
+  justify-content: space-between;
+  overflow: visible;
+  pointer-events: none;
+  /* The hero-to-sidebar assembly (heroTransition.js) is unusual in that
+     several of the properties it scrubs are layout properties, not
+     compositable ones: the portrait tweens real width/height so object-fit
+     recomputes its crop, the social row tweens its column-gap and each link's
+     width so flex reflows the icons out of the old text labels, and the brand
+     stack tweens its own height to 0 so it doesn't leave a gap behind. That
+     is a genuine flex reflow of this column on every frame of the transition,
+     and it is not something the animation can give up without losing what it
+     is for.
+
+     What it can give up is having that reflow escape the sidebar. `contain:
+     layout` tells the engine that nothing in here can change the geometry of
+     anything outside it, so each of those frames re-lays-out a dozen boxes
+     instead of walking out into the document. Nothing here relies on an
+     outside containing block — every absolutely positioned descendant already
+     has a positioned ancestor within the sidebar — and this element is
+     already both fixed and a stacking context, so the other things layout
+     containment implies are no change at all. */
+  contain: layout;
+}
+
+.site-sidebar > * {
+  pointer-events: auto;
+  flex-shrink: 0;
+}
+
+/* Once the column has drifted off the closing frame it stops answering the
+   pointer as well as the eye — see the note on the exit's onUpdate in
+   sections/contact.js. The column itself is already pointer-events:none; this
+   is about its children, which are not. */
+.site-sidebar.is-gone > * {
+  pointer-events: none;
+}
+
+/* Only while this box is actually moving — heroTransition.js adds it on the
+   first frame of the assembly and takes it off once the scrub has caught up
+   and stopped. See the long note there for why; the short version is that a
+   region this size cannot be re-rasterised sixty times a second, so it is
+   rasterised once and scaled by the compositor instead, and everything inside
+   it that would otherwise repaint and force a fresh rasterisation is held
+   still for the duration.
+
+   While it is *not* moving the hint has to go, and that is not a matter of
+   thrift. A composited layer is drawn at whatever offset its transform asks
+   for, and this one's is a measured FLIP delta — some fraction of a pixel,
+   near enough always. Drawing a rasterised layer at a fractional offset
+   resamples the whole of it, which on a name set at two hundred pixels is
+   invisible and on the two scrawls in its corners, set at fifteen, is
+   exactly the soft, slightly-out-of-focus look they kept arriving with. Off
+   the layer, the same fraction is just where the glyphs are positioned, and
+   the type is rasterised at it rather than smeared across it. The offsets
+   are rounded to whole pixels in heroTransition.js as well, so the frame is
+   sharp either way — but nothing is composited while it is being read. */
+.sidebar-name.is-moving {
+  will-change: transform;
+}
+
+.sidebar-name.is-scaling .hero-underline-stroke {
+  animation-play-state: paused;
+}
+
+/* Same class, same reasoning, one level down: their opacity is tweened across
+   the first third of the assembly, and on a plain child of the name that is a
+   repaint of the layer it sits in. Worth a layer of their own while that is
+   happening; worth nothing at all — and costing the sharpness above — for the
+   rest of the time. */
+.sidebar-name.is-moving .hero-mark {
+  will-change: opacity;
+}
+
+.sidebar-name {
+  position: relative;
+  /* Every decoration below is a child of this box, so it rides the same
+     hero → sidebar FLIP the name itself does (heroTransition.js scales
+     this element from its sidebar size up to ~4x for the opening frame).
+     That divisor is what --hero-flip holds: sizes written as
+     calc(<x>rem / var(--hero-flip)) therefore read as <x>rem on screen
+     while the hero is still on show, which is the only state these marks
+     are ever seen in. The ratio itself barely moves across viewports —
+     both terms of it are driven by the same root font-size — so a
+     constant is honest here. */
+  --hero-flip: 4.05;
+}
+
+/* The name itself. It was a WebGL canvas until it wasn't — see ui/heroName.js
+   for why, and for the sizing pass that makes the run span this box exactly
+   the way `width: 100%` used to make the canvas do.
+
+   font-size here is the authored starting point and the fallback; heroName.js
+   measures the rendered run and overwrites it with the size that fills the
+   box. line-height is what decides this element's box height, and through it
+   where the underline (top: 99%) and the "keep digging" scrawl (top: 100%)
+   below hang — 1.03 puts the box at the same proportion of the name's width
+   the canvas's own aspect ratio did. */
+.sidebar-name-text {
+  position: relative;
+  display: block;
+  font-family: var(--font-poster);
+  font-weight: 400;
+  font-size: 3.95rem;
+  line-height: 1.03;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.sidebar-name-line {
+  display: inline-block;
+}
+
+/* The aura the shader drew by dilating the letterforms into three rings at
+   0.55, 0.33 and 0.11 alpha. Two shadows land close enough to it, and they
+   take their colour from the ink they are hugging — which was the one thing
+   the shader version was careful about, since the two words are inked
+   differently and a single glow colour for both looked wrong on one of them. */
+.sidebar-name-word {
+  color: var(--color-light);
+  text-shadow:
+    0 0 0.035em color-mix(in srgb, currentColor 45%, transparent),
+    0 0 0.08em color-mix(in srgb, currentColor 20%, transparent);
+}
+
+.sidebar-name-word--accent {
+  color: var(--color-text);
+}
+
+/* The two glitch layers heroName.js clones. Hidden costs nothing: a
+   visibility:hidden element is not painted, so for the ninety-odd percent of
+   the time that nothing is glitching, the name is exactly one line of text. */
+.sidebar-name-ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* The band that nudges toward white. It sits over the base rather than
+   replacing it, at the same ~0.5 the shader mixed at. */
+.sidebar-name-ghost--flash .sidebar-name-word {
+  color: #fff;
+  text-shadow: none;
+}
+
+.sidebar-name-ghost--flash {
+  opacity: 0.55;
+}
+
+/* ...and the same band read through a scanline comb instead, which is the
+   nearest a stylesheet gets to the shader's per-pixel static without paying
+   for a noise texture. */
+.sidebar-name-ghost--flash.is-static {
+  opacity: 0.4;
+  -webkit-mask-image: repeating-linear-gradient(0deg, #000 0 1px, transparent 1px 3px);
+  mask-image: repeating-linear-gradient(0deg, #000 0 1px, transparent 1px 3px);
+}
+
+/* Pushed right of its old 8% start to clear the "keep digging" scrawl that
+   now occupies the left end of the same line, and stopped short of its old
+   right end so it no longer runs under the social row. Dropped a little
+   further below the name than 96% too — that whole bottom band was reading
+   as one crowded line. */
+.hero-underline {
+  position: absolute;
+  left: 21%;
+  top: 99%;
+  width: 68%;
+  height: 14%;
+  overflow: visible;
+}
+
+.hero-underline-stroke {
+  fill: none;
+  stroke: var(--color-light);
+  stroke-width: 13;
+  stroke-linecap: round;
+  filter: url(#markerRough);
+  animation: hero-underline-glitch 2.4s steps(1, jump-end) infinite;
+}
+
+@keyframes hero-underline-glitch {
+  0% {
+    transform: translate(0, 0);
+    filter: url(#markerRough);
+    opacity: 1;
+  }
+  5% {
+    transform: translate(0.8px, -0.8px);
+    filter: url(#markerRough) blur(0.25px);
+    opacity: 0.94;
+  }
+  10% {
+    transform: translate(-0.8px, 0);
+    filter: url(#markerRough);
+    opacity: 1;
+  }
+  15% {
+    transform: translate(1.6px, 0.8px);
+    filter: url(#markerRough) brightness(0.9);
+    opacity: 0.92;
+  }
+  20% {
+    transform: translate(0, -0.8px);
+    filter: url(#markerRough);
+    opacity: 1;
+  }
+  25% {
+    transform: translate(-1.6px, 0);
+    filter: url(#markerRough) blur(0.4px);
+    opacity: 0.94;
+  }
+  30% {
+    transform: translate(0.8px, 0.8px);
+    filter: url(#markerRough);
+    opacity: 1;
+  }
+  35% {
+    transform: translate(0, 0);
+    filter: url(#markerRough) brightness(0.87) blur(0.3px);
+    opacity: 0.9;
+  }
+  40% {
+    transform: translate(-0.8px, -0.8px);
+    filter: url(#markerRough);
+    opacity: 1;
+  }
+  45% {
+    transform: translate(1.6px, 0);
+    filter: url(#markerRough);
+    opacity: 0.97;
+  }
+  50% {
+    transform: translate(-0.8px, 0.8px);
+    filter: url(#markerRough) blur(0.25px);
+    opacity: 0.94;
+  }
+  55% {
+    transform: translate(0, -0.8px);
+    filter: url(#markerRough);
+    opacity: 1;
+  }
+  60% {
+    transform: translate(0.8px, 0);
+    filter: url(#markerRough) brightness(0.9);
+    opacity: 0.92;
+  }
+  65% {
+    transform: translate(-1.6px, 0.8px);
+    filter: url(#markerRough);
+    opacity: 1;
+  }
+  70% {
+    transform: translate(0, 0);
+    filter: url(#markerRough) blur(0.4px);
+    opacity: 0.94;
+  }
+  75% {
+    transform: translate(0.8px, -0.8px);
+    filter: url(#markerRough);
+    opacity: 1;
+  }
+  80% {
+    transform: translate(-0.8px, 0);
+    filter: url(#markerRough) brightness(0.88) blur(0.25px);
+    opacity: 0.91;
+  }
+  85% {
+    transform: translate(1.6px, 0.8px);
+    filter: url(#markerRough);
+    opacity: 1;
+  }
+  90% {
+    transform: translate(0, -0.8px);
+    filter: url(#markerRough);
+    opacity: 0.96;
+  }
+  95% {
+    transform: translate(-0.8px, 0);
+    filter: url(#markerRough) blur(0.3px);
+    opacity: 0.94;
+  }
+  100% {
+    transform: translate(0, 0);
+    filter: url(#markerRough);
+    opacity: 1;
+  }
+}
+
+/* Two hero-only scrawls pinned to the name's own corners. They are children
+   of .sidebar-name rather than free-floating overlays so they need no
+   runtime positioning of their own: they stay glued to those corners for
+   free through the whole FLIP. heroTransition.js fades them out early in
+   that same scroll — they belong to the opening frame, not to the
+   assembled sidebar. */
+.hero-mark {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  font-family: "Higher Jump", var(--font-secondary);
+  line-height: 1;
+  color: var(--color-light);
+  white-space: nowrap;
+}
+
+/* Both arrows carry their angle as a bare number rather than only inside the
+   transform, because heroTransition.js's tremor takes that transform over at
+   runtime and has to know what to settle back around — one source of truth
+   instead of the same figure written down twice in two languages. */
+.hero-mark-arrow {
+  display: block;
+  width: calc(1.5rem / var(--hero-flip));
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  flex-shrink: 0;
+  transform: rotate(calc(var(--arrow-rotate, 0) * 1deg));
+  /* The words next to them are selectable like any other text on the page;
+     these are decoration, and left draggable they'd start a ghost-image drag
+     the moment someone tried to sweep a selection across the line. */
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* Top-right corner, sitting above the cap line and running a little past the
+   name's own right edge so its tail crosses over the portrait's column. */
+.hero-mark--tag {
+  right: -9%;
+  bottom: 100%;
+  margin-bottom: calc(0.65rem / var(--hero-flip));
+  column-gap: calc(0.4rem / var(--hero-flip));
+  font-size: calc(0.85rem / var(--hero-flip));
+}
+
+.hero-mark-arrow--tag {
+  width: calc(1.6rem / var(--hero-flip));
+  /* Half a turn from the source's up-right, so it points back down into the
+     letterforms the line is talking about. */
+  --arrow-rotate: 180;
+}
+
+/* The room the underline vacated when it moved right. Arrow first: it reads
+   as pointing the way down the page, with the words following it. */
+.hero-mark--dig {
+  left: 0;
+  top: 100%;
+  /* Enough to put the words' own middle on the marker stroke's left end,
+     which the underline's upward slope leaves sitting lower than the box it
+     is drawn in would suggest. */
+  margin-top: calc(1.2rem / var(--hero-flip));
+  column-gap: calc(0.4rem / var(--hero-flip));
+  font-size: calc(1rem / var(--hero-flip));
+}
+
+.hero-mark-arrow--dig {
+  width: calc(1.4rem / var(--hero-flip));
+  /* Same up-right source as every other arrow on the page, turned to point
+     straight down at the scroll it is asking for. */
+  --arrow-rotate: 135;
+}
+
+.sidebar-tagline {
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+  color: var(--color-light);
+}
+
+/* All four candidates in one grid cell, so the box is as wide as the longest
+   of them whichever one is showing and the line's length never moves as it
+   cycles. inline-grid keeps it on the baseline of the words either side of
+   it. */
+.tagline-swap {
+  display: inline-grid;
+  vertical-align: baseline;
+}
+
+.tagline-word {
+  grid-area: 1 / 1;
+  visibility: hidden;
+  white-space: nowrap;
+}
+
+.tagline-word.is-on {
+  visibility: visible;
+}
+
+/* The nav's own content, boxed so the header's restlessness has something to
+   move. It cannot move the links themselves: heroTransition.js owns each
+   one's transform for the whole of the opening frame, flipping it from the
+   old header's row down to its place in the column, and a second writer on
+   that property is how a link ends up somewhere nobody chose. */
+.nav-inner {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4em;
+}
+
+/* Reads as the nav's own index numbers do — light ink held back to 0.6 —
+   rather than as another accent-red line competing with the name. */
+.sidebar-stack {
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-light);
+  opacity: 0.6;
+  overflow: hidden;
+}
+
+/* The stage the social/bio/locale block and its #wpkoi replacement share.
+   ---------------------------------------------------------------
+   Its whole job is to keep the column still through the swap. The three
+   original panels stay in normal flow inside it and are only ever faded and
+   blurred — never resized, never removed — so this box holds the height they
+   came to whatever is happening on top of it. The replacement is layered over
+   them and contributes nothing.
+
+   The gap is the sidebar column's own, so wrapping the three changed nothing
+   about where any of them sits: what used to be two column gaps between three
+   children is now two gaps between the same three, one level in. */
+.sidebar-links {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sidebar-gap);
+}
+
+.sidebar-links-now {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sidebar-gap);
+}
+
+/* Laid over the block above rather than into it.
+   ---------------------------------------------------------------
+   The social words hang from the top, so they land on the line the icons they
+   replace were on. The two site links take the room left below them, centred
+   in it by a pair of auto margins.
+
+   The box reaches one column gap *past* the stage it covers, and that is what
+   makes the centring read right rather than merely be right: below the stage
+   sits the sidebar's own gap and then the nav, so centring within the stage
+   alone would put the row visibly high of the midpoint between the words
+   above it and the nav below. Extending the box by that gap centres it
+   against what the eye actually measures from. Nothing is painted down
+   there — it is only the boundary the auto margins resolve against. */
+.sidebar-links-next {
+  position: absolute;
+  top: 0;
+  bottom: calc(-1 * var(--sidebar-gap));
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Once the swap has finished, the words become reachable and the icons
+   underneath stop being. ui/sidebarWpkoi.js toggles this at the point the two
+   have crossed over. */
+.sidebar-links.is-wpkoi .sidebar-links-next {
+  pointer-events: auto;
+}
+
+.sidebar-links.is-wpkoi .sidebar-links-now {
+  pointer-events: none;
+}
+
+.sidebar-word-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  column-gap: 0.75rem;
+  row-gap: 0.35rem;
+}
+
+/* The two sites the section is about: set larger than the profiles above
+   them, and floated into the middle of the space between those and the nav. */
+.sidebar-word-links--sites {
+  margin-block: auto;
+  column-gap: 1rem;
+}
+
+.sidebar-word-links--sites .sidebar-word-link {
+  font-size: 1.155rem;
+}
+
+/* Deliberately the same treatment .social-text wears in the opening frame —
+   this is that form returning, not a new one. */
+.sidebar-word-link {
+  white-space: nowrap;
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 0.755rem;
+  /* 0.0755rem is what .social-text carries at 0.755rem — a tenth of its own
+     size. Written as em so the larger pair below tracks the same rather than
+     reading tighter for being bigger. */
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  color: var(--color-light);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+/* The one the section is named after, inked as such from the start. It keeps
+   the hover, which lands on the same colour — so what the pointer changes
+   here is nothing, deliberately: an accent link that brightens further on
+   hover would read as two different states of emphasis. */
+.sidebar-word-link--accent {
+  color: var(--color-accent);
+}
+
+.sidebar-word-link:hover {
+  color: var(--color-accent);
+}
+
+.sidebar-social {
+  display: flex;
+  align-self: flex-start;
+  gap: 0.6rem;
+  align-items: center;
+    z-index: 2;
+}
+
+/* Two fades, multiplied, because two timelines own one of these each and
+   neither can be asked to give theirs up: the sidebar assembling brings the
+   two extra profiles in on width and opacity (ui/heroTransition.js), and the
+   #wpkoi face takes all five out again (ui/sidebarWpkoi.js). Written straight
+   to `opacity` they were one property with two owners, and the answer on
+   screen was whichever of them rendered last — which on any movement that
+   crosses both ranges at once left an icon sitting in the opening frame at
+   full strength inside a link the assembly was holding at zero width.
+
+   Two variables and a product is what "two independent fades" actually
+   means. Neither timeline writes `opacity` here any more; each writes its own
+   term and the element resolves them. The two elements below carry the same
+   arrangement for the same reason. */
+.social-link {
+  position: relative;
+  display: block;
+  width: 1.875rem;
+  height: 1.875rem;
+  flex-shrink: 0;
+  overflow: visible;
+  --assembly-fade: 1;
+  --exit-fade: 1;
+  opacity: calc(var(--assembly-fade) * var(--exit-fade));
+}
+
+.social-text {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 0.755rem;
+  letter-spacing: 0.0755rem;
+  color: var(--color-light);
+  transition: color 0.2s ease;
+}
+
+.social-icon-svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1.875rem;
+  height: 1.875rem;
+  overflow: visible;
+  color: var(--color-light);
+  opacity: 0.85;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.social-link:hover .social-text {
+  color: var(--color-accent);
+}
+
+.social-link:hover .social-icon-svg {
+  color: var(--color-accent);
+  opacity: 1;
+}
+
+.sidebar-bio {
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--color-light);
+  opacity: 0.75;
+}
+
+.sidebar-locale {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  opacity: 0;
+}
+
+.sidebar-locale-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-light);
+  opacity: 0.75;
+}
+
+.sidebar-locale-item svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex-shrink: 0;
+  color: var(--color-accent);
+}
+
+.sidebar-nav {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  justify-items: start;
+  column-gap: 1.1rem;
+  row-gap: 0.6rem;
+}
+
+.sidebar-nav a {
+  display: inline-block;
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: var(--color-light);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.nav-index {
+  font-size: 0.7em;
+  opacity: 0.6;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.is-active {
+  color: var(--color-accent);
+}
+
+/* The portrait is what makes the column fit its viewport.
+   ---------------------------------------------------------------
+   Everything else in the sidebar keeps the height its content asks for
+   (flex-shrink: 0, up at .site-sidebar > *). This row is the single item that
+   gives: it takes whatever vertical room the column has left after them, and
+   gives it back first when there isn't enough.
+
+   That is the whole of the fix for the gap. The email used to be pushed down
+   by `margin-top: auto` while the portrait held a fixed square, so on any
+   viewport proportionally taller than the 1520x703 reference the leftover
+   height opened up as a hole between the two. Now there is no leftover: it is
+   the portrait's.
+
+   `flex-basis: auto` on purpose rather than a number — the base is the
+   portrait's own aspect ratio at its width, so the row starts from a shape
+   that suits the photograph and is then stretched or squeezed to fit. At the
+   reference viewport it squeezes to 235px, which is exactly the square the
+   old arithmetic arrived at, so nothing there moves. */
+.sidebar-photo-row {
+  position: relative;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: var(--sidebar-photo-max-height);
+}
+
+/* Never the full width. The badge beside it is set vertically and needs a
+   column of its own; at the reference viewport the square happened to come
+   out at 85% and the two just cleared each other, but that was the height cap
+   deciding the width by accident — on a taller viewport the square grew to
+   the full column and the badge ended up printed across the photograph.
+   Holding the width explicitly makes that impossible at any shape.
+
+   No aspect-ratio any more either: the height comes from the row. */
+.sidebar-photo-wrap {
+  position: relative;
+  width: var(--sidebar-photo-width);
+  height: 100%;
+  overflow: hidden;
+}
+
+.sidebar-photo,
+.sidebar-photo-glitch {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.sidebar-photo {
+  /* Held back by default — most of the colour drained but not all of it, a
+     shade darker, warmed just enough not to read as a cold grey — so the
+     portrait sits in the layout as one more printed element rather than as
+     the single full-colour photograph on the page. Hover hands the rest of
+     the colour back and gives it the contrast-only treatment it used to
+     carry all the time. */
+  filter: contrast(1.2) grayscale(0.3) brightness(0.9) sepia(0.08);
+  transition: filter 0.5s ease;
+}
+
+.sidebar-photo-wrap:hover .sidebar-photo {
+  filter: contrast(1.25) grayscale(0) brightness(1) sepia(0);
+}
+
+/* A second copy of the same frame, invisible almost all of the time: every
+   few seconds it flashes one displaced horizontal slice across the portrait
+   — the same torn-scanline language the name's shader and the marker
+   underline already speak, but at a cost the page can afford to leave
+   running forever. Stepped keyframes, so each slice snaps in and out
+   instead of easing (a glitch that fades is just a fade), and no per-frame
+   JS or second canvas involved.
+
+   A real <img> rather than a background-image on a pseudo-element, which is
+   what this started as: the portrait is served responsively now, and a
+   background URL cannot follow a srcset — it would have pinned one fixed
+   size and pulled it down as a second, separate request. Given the identical
+   srcset and sizes, this element resolves to the very candidate the portrait
+   beside it already fetched, so it costs a decode and no bytes. */
+.sidebar-photo-glitch {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  animation: photo-glitch 6.5s steps(1, jump-end) infinite;
+}
+
+@keyframes photo-glitch {
+  0%,
+  62% {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    transform: none;
+  }
+  63% {
+    opacity: 0.9;
+    clip-path: inset(22% 0 66% 0);
+    transform: translateX(-4%);
+    filter: grayscale(1) brightness(1.35);
+  }
+  65% {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    transform: none;
+  }
+  71% {
+    opacity: 0.85;
+    clip-path: inset(54% 0 34% 0);
+    transform: translateX(3.5%);
+    filter: grayscale(1) brightness(0.65);
+  }
+  72.5% {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    transform: none;
+  }
+  73.5% {
+    opacity: 0.8;
+    clip-path: inset(38% 0 55% 0);
+    transform: translateX(-2%);
+    filter: grayscale(1) brightness(1.2);
+  }
+  75%,
+  100% {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    transform: none;
+  }
+}
+
+.sidebar-photo-caption {
+    position: absolute;
+    z-index: 2;
+    top: 0.55rem;
+    left: 0.55rem;
+    font-family: var(--font-poster);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.75rem;
+    color: #1c1c1a;
+    opacity: 0;
+}
+
+/* Sits exactly where the portrait does — same width fraction, same height,
+   absolutely positioned so it contributes nothing to the row's own size and
+   cannot disturb the measurement heroTransition.js takes of the finished
+   portrait box.
+
+   The row count is a data attribute rather than a media query: what decides
+   it is the shape of this box, which depends on how much vertical room the
+   column had left over, not on the viewport's width. ui/sidebarPortfolio.js
+   measures and sets it. */
+.sidebar-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-photo-width);
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(var(--sidebar-grid-rows, 2), 1fr);
+  gap: var(--sidebar-grid-gap);
+  /* Owned by the scrubbed timeline from here on; nothing of it shows until
+     the portfolio pin engages. */
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Six tiles are always in the markup. A two-row grid uses the first four
+   rather than letting the other two open implicit rows underneath it. */
+.sidebar-grid[data-rows="2"] .sidebar-grid-tile:nth-child(n + 5) {
+  display: none;
+}
+
+.sidebar-grid-tile {
+  overflow: hidden;
+}
+
+.sidebar-grid-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The same held-back grade the portrait wears, so the two read as the same
+     printed surface rather than as a photograph swapped for screenshots. */
+  filter: contrast(1.15) grayscale(0.25) brightness(0.92) sepia(0.06);
+}
+
+/* The strip the portrait leaves for it — the two are complementary by
+   construction now, so they cannot overlap however the column is shaped. */
+.sidebar-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: calc(100% - var(--sidebar-photo-width));
+  /* A single-cell grid rather than a flex row: both labels are placed in that
+     one cell, so they sit exactly on top of each other and can be cross-faded
+     without either one needing a transform to line it up with the other. */
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  opacity: 0;
+}
+
+.badge-text {
+  grid-area: 1 / 1;
+  writing-mode: vertical-rl;
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  color: var(--color-light);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+/* The second label. Hidden here rather than by the timeline so it is never
+   painted before the page has decided whether it is wanted. */
+.badge-text--alt {
+  opacity: 0;
+}
+
+.badge-accent {
+  color: var(--color-accent);
+}
+
+/* No `margin-top: auto`. It used to pin this to the bottom, and it is what
+   created the hole above it: an auto margin absorbs a flex line's free space
+   *before* flex-grow gets a look at it, so with it here the portrait row
+   could never grow into that space. The row taking the slack puts this at the
+   bottom just the same, and leaves nothing between them. */
+/* Layout-neutral by design: it takes the flex item's place the button used
+   to hold, and reproduces that context inside itself so the button's own
+   sizing is unchanged. A column rather than a plain block, because that is
+   what the button was in before — a form control's `width: auto` is
+   fit-content whatever its display is, so as a block-level child it would
+   shrink to its label; as the single item of a flex column it is stretched
+   across the cross axis exactly as the sidebar itself was stretching it.
+   See the note in the markup for why this element exists at all. */
+.sidebar-email-slot {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Same job for the bio and the locale line — see the note in the markup. A
+   plain block: the paragraph and the locale row each fill it, so the column
+   above lays out exactly as it did when they were its own children. */
+.sidebar-fade-slot {
+  display: block;
+}
+
+.sidebar-email {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.95rem 1.15rem;
+  border: 1px solid rgba(236, 231, 220, 0.28);
+  background: rgba(236, 231, 220, 0.04);
+  cursor: pointer;
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  font-size: 0.88rem;
+    letter-spacing: 0.08em;
+  color: var(--color-light);
+  overflow: hidden;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.sidebar-email:hover {
+  border-color: var(--color-accent);
+  background: rgba(255, 50, 29, 0.08);
+}
+
+.sidebar-email-icon {
+  flex-shrink: 0;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--color-accent);
+}
+
+/* The same scrawled "got it" the contact section's button gives — light ink
+   on the accent plate in the drawn face, rather than the button's own Satoshi
+   in the background colour. It is a scribbled confirmation, not a second
+   label, and there is no reason for the page to say it two different ways. */
+.sidebar-email-copied {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: var(--color-accent);
+  font-family: "Higher Jump", var(--font-secondary);
+  font-weight: 400;
+  font-size: 1rem;
+  letter-spacing: 0;
+  color: var(--color-light);
+  opacity: 0;
+  transform: translateY(100%);
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.sidebar-email.is-copied .sidebar-email-copied {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* ===============================================================
+   Portrait: everything narrower than 4:3.
+   ===============================================================
+   The composition above this boundary is a fixed column down the right-hand
+   side with the content beside it, and an opening frame that assembles into
+   that column as the reader scrolls. None of it survives a window taller than
+   it is wide: the column would take a third of the width, the frame it
+   assembles from has nowhere to be, and the content beside it has nothing
+   left to be beside.
+
+   So below 4:3 the column stops being one. The panel is still the same
+   element carrying the same children — it simply becomes a full-screen sheet
+   that arrives from the top when the bar's button asks for it, and the
+   content takes the whole width. The assembly is switched off in JavaScript
+   for the same range (see utils/layout.js and the modules that ask it), which
+   is why the rules below have to state, in plain CSS, the state those
+   timelines would otherwise have left the panel in: the sidebar as it stands
+   from the second section on.
+   =============================================================== */
+
+/* The bar. Not rendered at all above the boundary — the column is the
+   navigation up there. */
+.site-topbar {
+  display: none;
+}
+
+.topbar-tagline {
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--color-light);
+}
+
+.topbar-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.35rem 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  color: var(--color-light);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Shut, the shape is the whole message and a word beside it is a caption on
+   an icon nobody needs one for. Open, it is not: a cross in the corner of a
+   full-screen sheet reads as "close" only once you have worked out that the
+   sheet is a thing that closes, and the word settles that instantly. So the
+   label appears with the state that needs it. */
+.topbar-toggle-label {
+  display: none;
+}
+
+.topbar-toggle.is-open .topbar-toggle-label {
+  display: block;
+}
+
+/* Two marks that become a cross. The cross is the same two turned through a
+   right angle in opposite directions and brought together on the middle line,
+   so the shape is one gesture rather than a swap of icons.
+
+   Drawn, not ruled: this is the underline's own path, viewBox and roughening
+   filter at a fraction of the size, which is why they read as scrawled rather
+   than as two rules. The viewBox is deliberately far wider than the box it is
+   drawn into, and preserveAspectRatio is off — so the pen and the filter's
+   displacement are squashed horizontally and left almost intact vertically.
+   That is exactly the character wanted: a line that wanders up and down
+   across its length rather than side to side, which is what a hand does. */
+.topbar-toggle-icon {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+}
+
+.topbar-toggle-icon svg {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  /* Room for the filter's spill: the displacement pushes the stroke past the
+     path's own bounds, and a clipped scrawl is a rule with a bite out of it. */
+  overflow: visible;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.topbar-toggle-icon svg:first-child {
+  top: 0;
+}
+
+.topbar-toggle-icon svg:last-child {
+  bottom: 0;
+}
+
+.topbar-toggle-stroke {
+  fill: none;
+  stroke: var(--color-light);
+  stroke-width: 13;
+  stroke-linecap: round;
+  filter: url(#markerRough);
+}
+
+@media (aspect-ratio < 4/3) {
+  /* ---- The bar itself: over everything the page paints, under the grain. */
+  .site-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(1 * var(--ui));
+    /* Wider than the vertical padding, and by exactly enough: the two top
+       corner marks now sit right out on the edge (see .corner-mark in
+       main.css), and this is what keeps the line and the button off them. */
+    padding: calc(1.1 * var(--ui)) calc(2.3 * var(--ui));
+    /* Transparent, as asked, so the page reads through it — but the type has
+       to survive whatever scrolls under it, hence the shadow rather than a
+       plate. */
+    background: none;
+    pointer-events: none;
+    text-shadow: 0 0.15rem 0.9rem rgba(0, 0, 0, 0.85);
+  }
+
+  .site-topbar > * {
+    pointer-events: auto;
+  }
+
+  .topbar-tagline {
+    font-size: calc(1 * var(--ui));
+  }
+
+  .topbar-toggle {
+    gap: calc(0.7 * var(--ui));
+    font-size: calc(0.85 * var(--ui));
+  }
+
+  .topbar-toggle-icon {
+    width: calc(1.6 * var(--ui));
+    height: calc(1.05 * var(--ui));
+  }
+
+  .topbar-toggle-icon svg {
+    height: calc(0.55 * var(--ui));
+  }
+
+  /* Half the distance between the two marks' own centres, each way, so they
+     meet on the middle line. */
+  .topbar-toggle.is-open .topbar-toggle-icon svg:first-child {
+    transform: translateY(calc(0.355 * var(--ui))) rotate(45deg);
+  }
+
+  .topbar-toggle.is-open .topbar-toggle-icon svg:last-child {
+    transform: translateY(calc(-0.355 * var(--ui))) rotate(-45deg);
+  }
+
+  /* ---- The panel.
+     Held off-screen above rather than removed: ui/heroName.js fits the name
+     to the width of the box it sits in and can only do that if the box has
+     one, and `display: none` would leave it measuring zero for as long as the
+     menu stayed shut — which is nearly always. Translated away it keeps its
+     full layout and paints nothing. */
+  .site-sidebar {
+    position: fixed;
+    inset: 0;
+    z-index: 9997;
+    width: 100%;
+    height: 100%;
+    padding: calc(4.6 * var(--ui)) calc(1.4 * var(--ui)) calc(1.6 * var(--ui));
+    gap: calc(1.4 * var(--ui));
+    /* The column's own rhythm, which .sidebar-links and its two faces all
+       lay out on — one property, so the whole stack moves onto this scale
+       together. */
+    --sidebar-gap: calc(1.1 * var(--ui));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: #0d0d10;
+    transform: translateY(-100%);
+    visibility: hidden;
+  }
+
+  /* The movement lives on the two state classes rather than on the element,
+     and that is not tidiness — it is the only way it cannot fire by accident.
+     A window dragged across 4:3 hands this element a transform it did not
+     have a moment earlier, and a transition sitting on the element would
+     animate that change: the sheet would slide up and away on arrival, as
+     though the reader had just closed a menu they never opened. Worse, it
+     would do it the instant the media query flipped, which is a fifth of a
+     second before any JavaScript hears about the resize — nothing could
+     suppress it after the fact. On the classes, the transition only exists
+     while ui/mobileMenu.js is opening or closing, and a mode change carries
+     neither. */
+  .site-sidebar.is-open {
+    transform: none;
+    visibility: visible;
+    transition:
+      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s;
+  }
+
+  /* Held for the length of the slide out, so the sheet is still painted while
+     it leaves. Without it visibility would flip on the first frame and the
+     panel would simply vanish. */
+  .site-sidebar.is-closing {
+    transition:
+      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 0.55s;
+  }
+
+  /* The light down either edge. Two ellipses hung off the sides and mostly
+     outside the box, so what reaches the sheet is the shoulder of each rather
+     than its middle — a curved edge of colour rather than a stain in the
+     corner. Behind the content and out of the pointer's way; the panel's own
+     ground is opaque, so this sits over it rather than under. */
+  .site-sidebar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(38% 46% at -6% 50%, rgba(255, 50, 29, 0.55), rgba(255, 50, 29, 0) 72%),
+      radial-gradient(38% 46% at 106% 50%, rgba(255, 50, 29, 0.55), rgba(255, 50, 29, 0) 72%);
+  }
+
+  .site-sidebar > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ---- The panel's contents, in the state the assembly would have left them.
+     Each of these is a value some timeline writes on the wide layout and
+     nothing writes here, so the stylesheet has to. */
+  .sidebar-locale,
+  .sidebar-badge,
+  .sidebar-photo-caption {
+    opacity: 1;
+  }
+
+  /* ...and each of these is a piece of the opening frame, which does not
+     happen here. The brand stack is collapsed to nothing by the end of the
+     assembly, the two scrawls are faded out early in it, and the social row's
+     word marks have become icons by the time it lands. The line under the
+     name goes because the bar above is already saying it. */
+  .sidebar-stack,
+  .sidebar-tagline,
+  .hero-mark,
+  .social-text {
+    display: none;
+  }
+
+  /* The years mark is set on its side, which is a thing a narrow column can
+     carry and a full-width sheet cannot: turned through a right angle beside
+     a photograph that is now less than half the width, it reads as debris.
+     It goes, and the room it leaves is left as room. */
+  .sidebar-badge {
+    display: none;
+  }
+
+  /* ...and the photograph goes with it whenever the space it is given has
+     stopped being a shape a portrait can live in.
+     ---------------------------------------------------------------
+     The box is a share of the sheet's width by a share of whatever vertical
+     room the column has left over, so on a short window it flattens — and a
+     face cropped to a letterbox is not a portrait, it is a band with an eye
+     in it. Past 5:3 it is withdrawn and the space stays empty, which reads as
+     deliberate in a way the crop never does.
+     Hidden rather than removed: taking it out of the flow would hand its room
+     to everything else and shuffle the whole sheet every time the window
+     changed shape. ui/mobileMenu.js measures and sets the class. */
+  .sidebar-photo-wrap.is-letterboxed {
+    visibility: hidden;
+  }
+
+  /* The portrait takes the width it can carry rather than the share of a
+     narrow column it was given: at 85% of a full-width sheet it would be the
+     whole screen. */
+  .site-sidebar {
+    --sidebar-photo-width: 44%;
+    --sidebar-photo-max-height: calc(18 * var(--ui));
+  }
+
+  /* ---- ...and everything inside it, restated against the same scale.
+     Each of these is the value the wide layout writes in rem; upright, a rem
+     is a share of a composition this sheet is not part of, and reading it at
+     that size is not possible on a handset. Same numbers, different unit. */
+  .sidebar-name {
+    /* The underline hangs a good way below the name's own box, so the column
+       gap alone put the social row almost on top of it. */
+    margin-bottom: calc(1.9 * var(--ui));
+  }
+
+  .sidebar-social {
+    gap: calc(0.9 * var(--ui));
+  }
+
+  .social-link,
+  .social-icon-svg {
+    width: calc(1.875 * var(--ui));
+    height: calc(1.875 * var(--ui));
+  }
+
+  .sidebar-bio {
+    font-size: calc(0.8 * var(--ui));
+  }
+
+  .sidebar-locale {
+    gap: calc(0.9 * var(--ui));
+  }
+
+  .sidebar-locale-item {
+    gap: calc(0.35 * var(--ui));
+    font-size: calc(0.6 * var(--ui));
+  }
+
+  .sidebar-locale-item svg {
+    width: calc(0.9 * var(--ui));
+    height: calc(0.9 * var(--ui));
+  }
+
+  .sidebar-nav {
+    column-gap: calc(1.1 * var(--ui));
+    row-gap: calc(0.6 * var(--ui));
+  }
+
+  .sidebar-nav a {
+    font-size: calc(0.95 * var(--ui));
+  }
+
+  .sidebar-photo-caption {
+    top: calc(0.55 * var(--ui));
+    left: calc(0.55 * var(--ui));
+    font-size: calc(0.75 * var(--ui));
+  }
+
+  .sidebar-email {
+    gap: calc(0.75 * var(--ui));
+    padding: calc(0.95 * var(--ui)) calc(1.15 * var(--ui));
+    font-size: calc(0.88 * var(--ui));
+  }
+
+  .sidebar-email-icon {
+    width: calc(1.1 * var(--ui));
+    height: calc(1.1 * var(--ui));
+  }
+
+  .sidebar-email-copied {
+    gap: calc(0.4 * var(--ui));
+    font-size: calc(1 * var(--ui));
+  }
+}

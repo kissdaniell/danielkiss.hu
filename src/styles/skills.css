@@ -1,0 +1,347 @@
+section#skills {min-height: inherit; padding-top: 0;}
+/* pointer-events is off until .is-live: this panel is a full-viewport box
+   pinned over the hero for that section's entire scroll, and for most of it
+   its own text is still scattered and invisible. Left answering the pointer,
+   it sat between the reader and everything the hero is actually showing —
+   right-clicks and text selections aimed at the name or the scrawls beside
+   it landed on this instead. skills.js turns it on once the reveal is
+   genuinely under way (see the onUpdate on its pin). */
+.skills-panel {
+  width: 100%;
+  /* svh, not vh: on a phone `vh` is the viewport with the address bar
+     hidden, so a box one `100vh` tall has its last band below the fold for
+     as long as the bar is up — which is the whole time the reader is first
+     looking at it. `svh` is the same measure taken with the bar shown. It
+     resolves identically to `vh` anywhere without a retracting toolbar, so
+     the wide layout is untouched. (No `vh` fallback line: the minifier drops
+     it as redundant for the browsers this is built for, which all have svh.) */
+  min-height: 100svh;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4rem 2rem;
+  padding-left: 5.775rem;
+  padding-right: calc(var(--sidebar-width) + 4rem);
+}
+
+.skills-panel.is-live {
+  pointer-events: auto;
+}
+
+.skills-heading {
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 6.3rem;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+
+.skills-heading-line {
+  display: block;
+}
+
+.skills-heading-line--light {
+  color: var(--color-light);
+}
+
+.skills-heading-line-wrap {
+  position: relative;
+  display: inline-block;
+  margin-top: 0.15em;
+  margin-left: 0.35em;
+  perspective: 500px;
+}
+
+.skills-heading-line--accent {
+  color: var(--color-accent);
+}
+
+.skills-heading-underline {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  height: 0.3em;
+  overflow: visible;
+}
+
+.skills-heading-underline-stroke {
+  fill: none;
+  stroke: var(--color-light);
+  stroke-width: 10;
+  stroke-linecap: round;
+  filter: url(#markerRough);
+  animation: hero-underline-glitch 2.4s steps(1, jump-end) infinite;
+}
+
+/* Reads as the readouts elsewhere do — the sidebar's own "INDEX — PORTFOLIO /
+   2026" line, the nav's index numbers — rather than as a second, smaller
+   heading. Small, tracked-out, light ink held back: a caption stating a fact
+   under the headline, not another sentence competing with it. */
+.skills-subheading {
+  /* Measured against the heading's own box, but what the eye reads it against
+     is the marker underline hanging ~30px below that box — so this figure has
+     to buy the gap twice over. */
+  margin-top: 5.3rem;
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-light);
+  opacity: 0.6;
+}
+
+.skills-subheading .word {
+  display: inline-block;
+}
+
+/* The indent came down from 20rem along with the wider gaps: the three items
+   need the room to stand apart, and there is no point buying air between them
+   by squeezing the row they live on. Full opacity here now too — the row used
+   to be dimmed as a whole, which capped how loud the numbers could get; the
+   holding-back moved onto the labels instead, so the figure and the word it
+   belongs to no longer carry the same weight. */
+.skills-stats {
+  display: flex;
+  gap: 6.5rem;
+  margin-top: 3.8rem;
+  padding-left: 10rem;
+}
+
+.skills-stat {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 0.8em;
+}
+
+.skills-stat-number {
+  font-family: var(--font-poster);
+  font-size: 4.2rem;
+  line-height: 1;
+  color: var(--color-accent);
+}
+
+.skills-stat-label {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.35;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-light);
+  opacity: 0.62;
+}
+
+/* The one claim on this row worth singling out. A drawn ring around it was the
+   first attempt and it was the wrong instrument: to enclose the figure it had
+   to cross the words beside it, and a mark that sits on top of type is in the
+   way rather than pointing. The page's own arrow says the same thing from
+   outside the box — left as the source draws it, up and to the right, so it
+   climbs out of the bottom-left corner and points back at the number.
+   skills.js fades it in with the stats and keeps it trembling after. */
+.skills-stat-arrow {
+  position: absolute;
+    left: -5.6rem;
+    top: 100%;
+    margin-top: -2.4rem;
+    width: 3.4rem;
+    height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  /* Hidden from the very first paint in plain CSS rather than from a JS
+     gsap.set — the same flash the heading underline in this section was
+     already fixed for once. */
+  opacity: 0;
+  pointer-events: none;
+}
+
+.skills-stat-label-line {
+  display: block;
+}
+
+.skills-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 5.55rem;
+  width: 100%;
+}
+
+.skills-category {
+}
+
+.skills-category--1 {
+  margin-left: 6rem;
+}
+
+.skills-category--2 {
+  margin-left: 24rem;
+}
+
+.skills-category--3 {
+  margin-left: 12rem;
+}
+
+.skills-category--4 {
+  position: relative;
+  margin-left: 32rem;
+}
+
+.skills-category-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65em;
+  margin-bottom: 0;
+}
+
+.skills-category-index {
+  font-family: var(--font-poster);
+  font-size: 1.55rem;
+  letter-spacing: 0.05em;
+  color: var(--color-accent);
+}
+
+.skills-category-title {
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  font-size: 3.55rem;
+  letter-spacing: 0.01em;
+  color: var(--color-light);
+}
+.skills-category--1 .skills-category-title {font-size: 5.55rem;}
+.skills-category--3 .skills-category-title {font-size: 4.55rem;}
+
+.skills-category-title .word {
+  display: inline-block;
+}
+
+/* Reads as the readouts elsewhere do — the sidebar's "INDEX — PORTFOLIO /
+   2026" line, the panel's own caption above — rather than as a second accent
+   colour under every title. These are a footnote to the heading they sit
+   under, and four accent-red rows of them were competing with the four
+   headings for the same attention. */
+.skills-category-tags {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.55em;
+  row-gap: 0.2em;
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  /* Held back in the colour rather than with opacity: the scroll reveal in
+     skills.js animates this element's opacity from 0 to 1 as the block
+     arrives, so anything set here would only survive until then. */
+  color: color-mix(in srgb, var(--color-light) 60%, transparent);
+}
+
+.skills-category--1 .skills-category-tags {padding-left: 6rem;}
+
+/* An aside to the fourth heading, out in the margin its 32rem indent leaves
+   free. Same scrawl-and-arrow pairing the rest of the page uses, kept small:
+   it is a remark, not a label. skills.js reveals the wrapper with the block
+   and keeps the two children trembling independently — the arrow is turned
+   from the source's up-right to point along the line at the title. */
+.skills-category-note {
+  position: absolute;
+  right: 100%;
+  top: 4rem;
+  margin-right: 2.6rem;
+  display: flex;
+  align-items: center;
+  column-gap: 1.2em;
+  font-family: "Higher Jump", var(--font-secondary);
+  font-size: 0.7rem;
+  line-height: 1;
+  color: var(--color-light);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.skills-category-note-arrow {
+  display: block;
+  width: 1.3rem;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  flex-shrink: 0;
+  transform: rotate(45deg);
+}
+
+/* Escaped rather than a literal middot, so the character survives whatever
+   this file is opened or re-saved with. Its own opacity multiplies with the
+   row's, so this reads lower than the 0.55 suggests — the separator has to
+   stay quieter than the words now that both are the same ink. */
+.skills-category-tag:not(:first-child)::before {
+  content: "\00b7";
+  margin-right: 0.55em;
+  opacity: 0.55;
+}
+
+
+/* ===============================================================
+   Portrait: narrower than 4:3.
+   ===============================================================
+   Two scales are in play below (see the note on --ui in main.css): `rem` is
+   the page's composition, which upright is small, and `var(--ui)` is the
+   reading scale the portrait furniture is written against. Anything that has
+   to hold a proportion — a heading spanning the frame — stays on the first.
+   Anything that is a label, a note or a figure the reader is meant to take in
+   rather than admire gets `max()` of both: the composition's answer while
+   there is room for it, and a legibility floor once there is not.
+   =============================================================== */
+@media (aspect-ratio < 4/3) {
+  /* ---- The three figures stop being a row.
+     Side by side they were three narrow columns of nothing across a screen
+     with height to spare. Stacked, each stepped further in than the one
+     above, they read as a descent — and they can be set at the size a figure
+     that carries a claim deserves. */
+  .skills-stats {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: max(2.2rem, calc(1.5 * var(--ui)));
+    margin-top: max(3rem, calc(2 * var(--ui)));
+    /* Room for the drawn arrow that hangs off the marked figure's left. */
+    padding-left: calc(3 * var(--ui));
+  }
+
+  .skills-stat:nth-child(2) {
+    margin-left: max(3rem, calc(2.4 * var(--ui)));
+  }
+
+  .skills-stat:nth-child(3) {
+    margin-left: max(6rem, calc(4.8 * var(--ui)));
+  }
+
+  .skills-stat-number {
+    font-size: max(5.6rem, calc(3.2 * var(--ui)));
+  }
+
+  .skills-stat-label {
+    font-size: max(1.35rem, calc(0.85 * var(--ui)));
+  }
+
+  .skills-stat-arrow {
+    left: calc(-2.6 * var(--ui));
+    margin-top: calc(-1.2 * var(--ui));
+    width: calc(1.8 * var(--ui));
+  }
+
+  /* ---- ...and the line under the heading gets its second line.
+     A measure rather than a break: the em dash is the only place this
+     sentence wants to divide, and it is the only place a measure of about
+     this width can put it. Stepped in, so it hangs off the heading rather
+     than starting under it. */
+  .skills-subheading {
+    max-width: 34ch;
+    margin-top: max(4rem, calc(2.6 * var(--ui)));
+    margin-left: max(1.5rem, calc(1 * var(--ui)));
+    font-size: max(1.35rem, calc(0.85 * var(--ui)));
+    line-height: 1.4;
+  }
+}

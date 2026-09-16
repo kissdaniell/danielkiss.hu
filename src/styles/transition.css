@@ -1,0 +1,102 @@
+/* The breath between the awards and the closing frame. It carries one line
+   of copy and, more importantly, scroll distance: the sidebar comes apart
+   across it and the contact field's photographs assemble behind it, neither
+   of which has anywhere to happen if the two sections simply meet.
+
+   The copy is centred on the content column, not the viewport: the sidebar
+   is only about half gone by the time this line is in the middle of the
+   screen, and centring on the full width ran the end of it underneath the
+   portrait. The line has scrolled away well before the sidebar finishes
+   leaving, so the column is the right frame for its whole visible life. */
+.transition {
+  position: relative;
+  min-height: 0;
+  /* Long enough to be a passage rather than a gap; nothing here is pinned,
+     so this is purely how far the reader travels while the two things above
+     play out. */
+  height: 160vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Top-aligned with a deep pad rather than centred: centring put the line
+     most of a viewport past the awards section before it showed up, which
+     read as a wait. It now arrives at about half that distance, and the rest
+     of the passage's length carries on serving the sidebar and the field. */
+  justify-content: flex-start;
+  padding: 36vh 2rem 4rem;
+  padding-right: calc(var(--sidebar-width) + 2rem);
+  overflow: hidden;
+}
+
+.transition-copy {
+  display: flex;
+  flex-direction: column;
+  /* The block is centred by the section; inside it the lines hang off a
+     common left edge, which is what lets the second one step out from under
+     the first. Centring them individually only ever produced a stagger of
+     about a character, whatever the margins. */
+  align-items: flex-start;
+  font-family: var(--font-poster);
+  text-transform: uppercase;
+  /* Smaller than the section headings it sits between, because it now has
+     to hold a 25-character line inside the content column rather than the
+     whole viewport. */
+  font-size: 4.6rem;
+  line-height: 1.06;
+  letter-spacing: 0.01em;
+}
+
+.transition-line {
+  display: block;
+  white-space: nowrap;
+}
+
+/* The two lines step past each other rather than stacking flush — margins
+   rather than transforms, so nothing here competes with the per-character
+   transforms transition.js writes. */
+.transition-line--light {
+  color: var(--color-light);
+}
+
+.transition-line--accent {
+  margin-left: 2em;
+  color: var(--color-accent);
+}
+
+
+/* Half the passage, upright.
+   ---------------------------------------------------------------
+   Its length is measured in viewport heights, and a viewport height upright
+   is most of a phone — so the same figure that reads as a considered pause on
+   a wide screen becomes a minute of scrolling past nothing on a tall one. The
+   approach keeps its shape at half the distance; the deep top pad halves with
+   it, so the line still arrives at the same point in the passage rather than
+   at the same number of pixels into it. */
+@media (aspect-ratio < 4/3) {
+  .transition {
+    height: 80vh;
+    padding-top: 18vh;
+  }
+}
+
+/* Taller than 9:16 — see the note at the foot of portfolio.css.
+   ---------------------------------------------------------------
+   160vh is a passage, not a gap: nothing here is pinned, so its length is
+   purely how far the reader travels while the sidebar retires and the closing
+   field assembles behind it. At the reference shape that is two thirds of a
+   screen of travel past the line. On a 20:9 handset it is nearly nine hundred
+   extra pixels of empty column — and the sidebar half of what it is paying
+   for does not even run there, because upright there is no sidebar.
+
+   Safe to shorten because every trigger reading this section reads it
+   proportionally, never in pixels: sections/contact.js takes 'top 30%' to
+   'bottom top' and 'top 75%' to 'top 30%', sections/transition.js 'top 90%'
+   to 'top 20%'. Shortening rescales all of them together — the field still
+   assembles from the same first frame to the same last one, over less
+   travel. Nothing to re-time, and one number to move if it wants to be
+   longer or shorter. */
+@media (aspect-ratio <= 9/16) {
+  .transition {
+    height: 100svh;
+  }
+}
