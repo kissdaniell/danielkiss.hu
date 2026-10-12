@@ -12,6 +12,13 @@
     <meta name="author" content="Daniel Kiss" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://danielkiss.hu/" />
+    <!-- The same page in both languages. Every one of these is on both pages,
+         including the page's own, which is what tells a crawler the set is
+         complete; tools/i18n/build-hu.mjs leaves them alone and only turns
+         round the canonical and the og:url. -->
+    <link rel="alternate" hreflang="en" href="https://danielkiss.hu/" />
+    <link rel="alternate" hreflang="hu" href="https://danielkiss.hu/hu/" />
+    <link rel="alternate" hreflang="x-default" href="https://danielkiss.hu/" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -305,7 +312,12 @@
         <span class="tagline-word">CHAOS</span>
         <span class="tagline-word">UNUSUAL</span>
       </span></p>
-      <p class="sidebar-stack">INDEX &mdash; PORTFOLIO / 2026</p>
+      <!-- The year is written again by ui/stackYear.js on load, so the line
+           is right the morning after new year's eve without a deploy. What
+           stands here is the fallback, and it wants to be the year this was
+           last built: it is what a reader without JavaScript sees, and what
+           the document carries into a crawler's index. -->
+      <p class="sidebar-stack">INDEX - PORTFOLIO / <span class="sidebar-stack-year">2026</span></p>
 
       <!-- The block that changes face at #wpkoi. The wrapper exists purely so
            the three panels below can be swapped for another set without the
@@ -384,6 +396,13 @@
         <a href="#portfolio"><span class="nav-inner"><span class="nav-index">03</span>Works</span></a>
         <a href="#awards"><span class="nav-inner"><span class="nav-index">04</span>Awards</span></a>
         <a href="#contact"><span class="nav-inner"><span class="nav-index">05</span>Contact</span></a>
+        <!-- The other language, last in the nav and deliberately not one of
+             the numbered destinations: no index, a rule drawn round it
+             instead. It is the same element in both layouts — the column
+             beside the page, and the sheet the portrait bar opens — so the
+             sheet gets it for free. tools/i18n/build-hu.mjs turns it round on
+             the Hungarian page. -->
+        <a href="/hu/" class="nav-lang" hreflang="hu" lang="hu"><span class="nav-inner">HU</span></a>
       </nav>
 
       <div class="sidebar-photo-row">

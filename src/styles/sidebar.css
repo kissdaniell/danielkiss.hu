@@ -670,6 +670,64 @@
   color: var(--color-accent);
 }
 
+/* The other language, last in the nav.
+   ---------------------------------------------------------------
+   Everything else in this list is a place on this page, numbered 01 to 05.
+   This one leaves the page, so it is drawn as a different kind of thing: no
+   index, a hairline round the words instead, and the ink held back until it
+   is pointed at. A rule rather than a colour, because the accent is already
+   saying "you are here" two lines up and a second red in the same list would
+   be two things claiming the same meaning.
+
+   The border lives on .nav-inner rather than on the link: the link's own
+   transform belongs to heroTransition.js for the whole of the opening frame,
+   and the box is the thing ui/heroHeader.js breaks up — so the rule tears
+   with the words rather than standing still around them.
+
+   Five items made the three-column grid two rows of 3 + 2; this one fills
+   the gap, which is the other reason it sits at the end. */
+/* The link is a box round a box, so that the frame can be smaller than the
+   line it sits on and still sit in the middle of it.
+   A bordered label set at the nav's own size is taller than the words beside
+   it by its padding and its rule — about eight pixels of it, all of which
+   hung below the line. So: the frame is drawn at four fifths of the size,
+   which leaves it shorter than the row rather than taller, and the link
+   itself becomes a flex box that centres it. Centred rather than nudged by a
+   number, because the two layouts measure the row differently — the grid
+   stretches this cell to the tallest item in its row, the opening frame's
+   header puts every link's top edge on one line — and a centre is the same
+   answer to both. */
+.sidebar-nav .nav-lang {
+  display: flex;
+  align-items: center;
+}
+
+.sidebar-nav .nav-lang .nav-inner {
+  /* An em of the nav's own type, so this follows it into the portrait
+     layout, where that size is written against var(--ui) instead of rem. */
+  font-size: 0.8em;
+  line-height: 1.05;
+  padding: 0.28em 0.5em;
+  border: 1px solid currentColor;
+  opacity: 0.68;
+  transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-nav .nav-lang:hover .nav-inner,
+.sidebar-nav .nav-lang:focus-visible .nav-inner {
+  opacity: 1;
+  background-color: var(--color-accent);
+  /* The ink inside the filled box, not the page's own background: the panel
+     is translucent over whatever the section behind it happens to be. */
+  color: var(--color-bg);
+}
+
+/* ...and the hover on the link itself would otherwise turn the rule and the
+   letters red a moment before the fill arrives. */
+.sidebar-nav .nav-lang:hover {
+  color: var(--color-light);
+}
+
 /* The portrait is what makes the column fit its viewport.
    ---------------------------------------------------------------
    Everything else in the sidebar keeps the height its content asks for

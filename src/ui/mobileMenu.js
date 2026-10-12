@@ -1,5 +1,6 @@
 import { ScrollSmoother } from 'gsap/ScrollSmoother';
 
+import { t } from '../i18n.js';
 import { isPortrait, onLayoutMode } from '../utils/layout.js';
 import { onViewportResize } from '../utils/viewport.js';
 
@@ -58,8 +59,8 @@ export function initMobileMenu() {
 
     toggle.classList.toggle('is-open', open);
     toggle.setAttribute('aria-expanded', String(open));
-    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    if (label) label.textContent = open ? 'CLOSE' : 'MENU';
+    toggle.setAttribute('aria-label', t(open ? 'Close menu' : 'Open menu'));
+    if (label) label.textContent = t(open ? 'CLOSE' : 'MENU');
 
     // The sheet covers the page, so the page should not answer the wheel
     // behind it. ScrollSmoother owns the scroll here; asking it to pause is
@@ -150,8 +151,8 @@ export function initMobileMenu() {
     menu.getAnimations().forEach((animation) => animation.cancel());
     toggle.classList.remove('is-open');
     toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Open menu');
-    if (label) label.textContent = 'MENU';
+    toggle.setAttribute('aria-label', t('Open menu'));
+    if (label) label.textContent = t('MENU');
     const smoother = ScrollSmoother.get();
     if (smoother) smoother.paused(false);
     applyReach();

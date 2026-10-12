@@ -1,0 +1,815 @@
+[
+ {
+  "where": "Fejléc (head) – SEO",
+  "kind": "Oldalcím (title)",
+  "source": "<title>",
+  "en": "Daniel Kiss - Frontend Developer | Creative Web Development | JavaScript, WordPress, GSAP, Three.js",
+  "hu": "Kiss Dániel – Frontend fejlesztő | Kreatív webfejlesztés | JavaScript, WordPress, GSAP, Three.js"
+ },
+ {
+  "where": "Fejléc (head) – SEO",
+  "kind": "Meta leírás",
+  "source": "meta name=\"description\"",
+  "en": "Daniel Kiss is a frontend developer crafting animation-driven web experiences with JavaScript, GSAP, Three.js and WordPress. View selected work, skills and awards.",
+  "hu": "Kiss Dániel frontend fejlesztő, animációvezérelt webes élményeket épít JavaScripttel, GSAP-pel, Three.js-szel és WordPresszel. Nézd meg a munkáit, tudását és díjait."
+ },
+ {
+  "where": "Fejléc (head) – SEO",
+  "kind": "A név, bárhol egyetlen szövegként áll",
+  "source": "meta name=\"author\", og:site_name, preloader, portré alt, JSON-LD name",
+  "en": "Daniel Kiss",
+  "hu": "Kiss Dániel"
+ },
+ {
+  "where": "Fejléc (head) – megosztás",
+  "kind": "Open Graph / Twitter cím",
+  "source": "meta property=\"og:title\", meta name=\"twitter:title\"",
+  "en": "Daniel Kiss - Frontend Developer | Creative Web Development",
+  "hu": "Kiss Dániel – Frontend fejlesztő | Kreatív webfejlesztés"
+ },
+ {
+  "where": "Fejléc (head) – megosztás",
+  "kind": "Open Graph / Twitter leírás",
+  "source": "meta property=\"og:description\", meta name=\"twitter:description\"",
+  "en": "Frontend developer crafting animation-driven web experiences with JavaScript, GSAP, Three.js and WordPress.",
+  "hu": "Frontend fejlesztő, aki animációvezérelt webes élményeket épít JavaScripttel, GSAP-pel, Three.js-szel és WordPresszel."
+ },
+ {
+  "where": "Fejléc (head) – megosztás",
+  "kind": "A megosztott kép leírása",
+  "source": "og:image:alt, twitter:image:alt",
+  "en": "Daniel Kiss, frontend developer",
+  "hu": "Kiss Dániel, frontend fejlesztő"
+ },
+ {
+  "where": "Fejléc (head) – strukturált adat",
+  "kind": "JSON-LD jobTitle",
+  "source": "script application/ld+json",
+  "en": "Frontend Developer",
+  "hu": "Frontend fejlesztő"
+ },
+ {
+  "where": "Fejléc (head) – strukturált adat",
+  "kind": "JSON-LD description",
+  "source": "script application/ld+json",
+  "en": "Frontend developer crafting animation-driven web experiences with JavaScript, GSAP, WebGL and WordPress.",
+  "hu": "Frontend fejlesztő, aki animációvezérelt webes élményeket épít JavaScripttel, GSAP-pel, WebGL-lel és WordPresszel."
+ },
+
+ {
+  "where": "Betöltő képernyő",
+  "kind": "Képernyőolvasónak",
+  "source": "div.preloader[aria-label]",
+  "en": "Loading",
+  "hu": "Betöltés"
+ },
+
+ {
+  "where": "Fix adatsor (jobb szél)",
+  "kind": "A szekció neve induláskor – utána a menüpontból írja át a szkript",
+  "source": "span.fixed-datas-section",
+  "en": "s:Introduce",
+  "hu": "s:Rólam"
+ },
+
+ {
+  "where": "Felső sáv és oldalsáv",
+  "kind": "Mottó (két helyen ugyanaz)",
+  "source": "p.topbar-tagline, p.sidebar-tagline",
+  "en": "CODE / MOTION /",
+  "hu": "KÓD / MOZGÁS /"
+ },
+ {
+  "where": "Felső sáv és oldalsáv",
+  "kind": "Váltakozó szó",
+  "source": "span.tagline-word",
+  "en": "WEIRD",
+  "hu": "EFFEKT"
+ },
+ {
+  "where": "Felső sáv és oldalsáv",
+  "kind": "Váltakozó szó",
+  "source": "span.tagline-word",
+  "en": "CHAOS",
+  "hu": "KÁOSZ"
+ },
+ {
+  "where": "Felső sáv és oldalsáv",
+  "kind": "Váltakozó szó",
+  "source": "span.tagline-word",
+  "en": "UNUSUAL",
+  "hu": "EGYEDI"
+ },
+ {
+  "where": "Felső sáv",
+  "kind": "Menügomb, képernyőolvasónak",
+  "source": "button.topbar-toggle[aria-label]",
+  "en": "Open menu",
+  "hu": "Menü megnyitása"
+ },
+ {
+  "where": "Felső sáv",
+  "kind": "Menügomb felirata",
+  "source": "span.topbar-toggle-label",
+  "en": "MENU",
+  "hu": "MENÜ"
+ },
+
+ {
+  "where": "Oldalsáv",
+  "kind": "Rejtett főcím (h1)",
+  "source": "h1.visually-hidden",
+  "en": "Daniel Kiss &mdash; Frontend Developer",
+  "hu": "Kiss Dániel &mdash; Frontend fejlesztő"
+ },
+ {
+  "where": "Oldalsáv és hero",
+  "kind": "A név két szava; az \"accent\" mondja meg, melyik a piros",
+  "source": "name",
+  "en": "Daniel Kiss",
+  "hu": "Kiss Dániel",
+  "accent": "Kiss"
+ },
+ {
+  "where": "Oldalsáv és hero",
+  "kind": "Kézírásos jel",
+  "source": "span.hero-mark-text, span.hero-portrait-mark-text",
+  "en": "I MAKE THE WEB MISBEHAVE",
+  "hu": "FORGASSUK FEL A NETET"
+ },
+ {
+  "where": "Oldalsáv és hero",
+  "kind": "Kézírásos jel",
+  "source": "span.hero-mark-text, span.hero-portrait-mark-text",
+  "en": "KEEP DIGGING",
+  "hu": "ÁSS LEJJEBB"
+ },
+ {
+  "where": "Oldalsáv",
+  "kind": "Stack-felirat (az évszámot ui/stackYear.js írja, nem fordítandó)",
+  "source": "p.sidebar-stack",
+  "en": "INDEX - PORTFOLIO /",
+  "hu": "INDEX - PORTFÓLIÓ /"
+ },
+ {
+  "where": "Oldalsáv",
+  "kind": "Bio, első sor",
+  "source": "p.sidebar-bio",
+  "en": "Frontend Developer | WordPress Developer",
+  "hu": "Frontend fejlesztő | WordPress fejlesztő"
+ },
+ {
+  "where": "Oldalsáv",
+  "kind": "Helyzet",
+  "source": "span.sidebar-locale-item",
+  "en": "Based in Hungary",
+  "hu": "Magyarország"
+ },
+ {
+  "where": "Oldalsáv",
+  "kind": "Helyzet",
+  "source": "span.sidebar-locale-item",
+  "en": "Working Worldwide",
+  "hu": "Világszerte"
+ },
+ {
+  "where": "Oldalsáv – menü",
+  "kind": "Képernyőolvasónak",
+  "source": "nav.sidebar-nav[aria-label]",
+  "en": "Primary",
+  "hu": "Fő navigáció"
+ },
+ {
+  "where": "Oldalsáv – menü",
+  "kind": "Menüpont 01",
+  "source": "nav.sidebar-nav a",
+  "en": "Introduce",
+  "hu": "Rólam"
+ },
+ {
+  "where": "Oldalsáv – menü",
+  "kind": "Menüpont 02",
+  "source": "nav.sidebar-nav a",
+  "en": "Skills",
+  "hu": "Készségek"
+ },
+ {
+  "where": "Oldalsáv – menü",
+  "kind": "Menüpont 03",
+  "source": "nav.sidebar-nav a",
+  "en": "Works",
+  "hu": "Munkák"
+ },
+ {
+  "where": "Oldalsáv – menü",
+  "kind": "Menüpont 04 és a díjak kézírásos jelvénye",
+  "source": "nav.sidebar-nav a, span.awards-badge-text",
+  "en": "Awards",
+  "hu": "Díjak"
+ },
+ {
+  "where": "Oldalsáv – menü",
+  "kind": "Menüpont 05",
+  "source": "nav.sidebar-nav a",
+  "en": "Contact",
+  "hu": "Kapcsolat"
+ },
+ {
+  "where": "Oldalsáv",
+  "kind": "A portré felirata",
+  "source": "span.sidebar-photo-caption",
+  "en": "Portrait / 01",
+  "hu": "Portré / 01"
+ },
+ {
+  "where": "Oldalsáv",
+  "kind": "Jelvény, első sor (a 14+ a piros)",
+  "source": "span.badge-text",
+  "en": "YEARS / WEB",
+  "hu": "ÉV / WEB"
+ },
+ {
+  "where": "Oldalsáv",
+  "kind": "Jelvény, második sor – az első szó",
+  "source": "span.badge-text--alt",
+  "en": "USED",
+  "hu": "Világszerte"
+ },
+ {
+  "where": "Oldalsáv",
+  "kind": "Jelvény, második sor – a piros szó",
+  "source": "span.badge-accent",
+  "en": "WORLDWIDE",
+  "hu": "nyúzzák"
+ },
+ {
+  "where": "Oldalsáv és kapcsolat",
+  "kind": "Másolás-visszajelzés",
+  "source": "span.sidebar-email-copied, span.contact-email-copied",
+  "en": "Copied",
+  "hu": "Másolva"
+ },
+
+ {
+  "where": "Hero – nyitó panel",
+  "kind": "Főcím, 1. sor",
+  "source": "span.skills-heading-line--light",
+  "en": "Make It Work,",
+  "hu": "Előbb Működjön,"
+ },
+ {
+  "where": "Hero – nyitó panel",
+  "kind": "Főcím, 2. sor (piros)",
+  "source": "span.skills-heading-line--accent",
+  "en": "Then Make It Weird&hellip;",
+  "hu": "Aztán rúgjunk bele&hellip;"
+ },
+ {
+  "where": "Hero – nyitó panel",
+  "kind": "Alcím",
+  "source": "p.skills-subheading",
+  "en": "Themes on wordpress.org since 2015 &mdash; the source is public.",
+  "hu": "Témák a wordpress.org-on 2015 óta"
+ },
+ {
+  "where": "Hero – statisztika",
+  "kind": "14+ alatt",
+  "source": "span.skills-stat-label-line",
+  "en": "Years",
+  "hu": "Év"
+ },
+ {
+  "where": "Hero – statisztika",
+  "kind": "500+ alatt",
+  "source": "span.skills-stat-label-line",
+  "en": "Templates",
+  "hu": "Weboldal"
+ },
+ {
+  "where": "Hero – statisztika",
+  "kind": "200+ alatt (a készségeknél ugyanez a szó Témák)",
+  "source": "span.skills-stat-label-line",
+  "in": "span.skills-stat-label-line",
+  "en": "Themes",
+  "hu": "Téma"
+ },
+
+ {
+  "where": "Készségek",
+  "kind": "01 – kategória címe",
+  "source": "h3.skills-category-title",
+  "en": "Creative & Motion",
+  "hu": "Kreativitás & animáció"
+ },
+ {
+  "where": "Készségek",
+  "kind": "Címke (01 és 04 alatt is)",
+  "source": "span.skills-category-tag",
+  "en": "Motion",
+  "hu": "Animáció"
+ },
+ {
+  "where": "Készségek",
+  "kind": "02 – kategória címe",
+  "source": "h3.skills-category-title",
+  "en": "WordPress Development",
+  "hu": "WordPress Fejlesztés"
+ },
+ {
+  "where": "Készségek",
+  "kind": "Címke",
+  "source": "span.skills-category-tag",
+  "en": "Themes",
+  "hu": "Témák"
+ },
+ {
+  "where": "Készségek",
+  "kind": "Címke",
+  "source": "span.skills-category-tag",
+  "en": "Plugins",
+  "hu": "Bővítmények"
+ },
+ {
+  "where": "Készségek",
+  "kind": "03 – kategória címe",
+  "source": "h3.skills-category-title",
+  "en": "Web Development",
+  "hu": "Webfejlesztés"
+ },
+ {
+  "where": "Készségek",
+  "kind": "Címke",
+  "source": "span.skills-category-tag",
+  "en": "Performance",
+  "hu": "Teljesítmény"
+ },
+ {
+  "where": "Készségek",
+  "kind": "Címke",
+  "source": "span.skills-category-tag",
+  "en": "Responsive Design",
+  "hu": "Reszponzív design"
+ },
+ {
+  "where": "Készségek",
+  "kind": "Címke",
+  "source": "span.skills-category-tag",
+  "en": "Accessibility",
+  "hu": "Akadálymentesség"
+ },
+ {
+  "where": "Készségek",
+  "kind": "Kézírásos jegyzet",
+  "source": "span.skills-category-note-text",
+  "en": "This is the fun part!",
+  "hu": "Na, ez a jó rész!"
+ },
+ {
+  "where": "Készségek",
+  "kind": "04 – kategória címe",
+  "source": "h3.skills-category-title",
+  "en": "Design &amp; Product",
+  "hu": "Design &amp; Effekt"
+ },
+ {
+  "where": "Készségek",
+  "kind": "Címke",
+  "source": "span.skills-category-tag",
+  "en": "Web Design",
+  "hu": "Webdesign"
+ },
+ {
+  "where": "Készségek",
+  "kind": "Címke",
+  "source": "span.skills-category-tag",
+  "en": "Product Development",
+  "hu": "Termékfejlesztés"
+ },
+
+ {
+  "where": "Portfólió",
+  "kind": "Főcím, 1. sor",
+  "source": "span.portfolio-heading-line--light",
+  "en": "Made Some.",
+  "hu": "Készült pár."
+ },
+ {
+  "where": "Portfólió",
+  "kind": "Főcím, 2. sor (piros)",
+  "source": "span.portfolio-heading-line--accent",
+  "en": "Broke Some&hellip;",
+  "hu": "Jó lett pár&hellip;"
+ },
+ {
+  "where": "Portfólió",
+  "kind": "Rejtett galérianav, képernyőolvasónak",
+  "source": "nav.visually-hidden[aria-label]",
+  "en": "Themes in the gallery",
+  "hu": "Témák a galériában"
+ },
+ {
+  "where": "Portfólió",
+  "kind": "Alcím, 1. sor",
+  "source": "span.portfolio-subheading-line--light",
+  "en": "And somehow,",
+  "hu": "És valahogy,"
+ },
+ {
+  "where": "Portfólió",
+  "kind": "Alcím, 2. sor (piros)",
+  "source": "span.portfolio-subheading-line--accent",
+  "en": "1M+ downloads",
+  "hu": "1M+ letöltés"
+ },
+ {
+  "where": "Portfólió",
+  "kind": "Állítás",
+  "source": "p.portfolio-claim",
+  "en": "Designed. Coded. Shipped. By me.",
+  "hu": "Design. Kód. Kiadás."
+ },
+ {
+  "where": "Portfólió",
+  "kind": "Tapasztalat-sor",
+  "source": "p.portfolio-experience",
+  "en": "Experience",
+  "hu": "Tapasztalat"
+ },
+ {
+  "where": "Portfólió, WPKoi, idővonal",
+  "kind": "Évszám-sorok vége (négy helyen)",
+  "source": "span.portfolio-experience-now, span.wpkoi-experience-now, p.wpkoi-timeline-years",
+  "en": "Now",
+  "hu": "Jelen"
+ },
+ {
+  "where": "Portfólió",
+  "kind": "A márka alcíme",
+  "source": "p.portfolio-brand-subtitle",
+  "en": "This one got serious.",
+  "hu": "Erre több idő ment."
+ },
+ {
+  "where": "Portfólió",
+  "kind": "A márka jegyzete",
+  "source": "p.portfolio-brand-note",
+  "en": "Built solo. Used worldwide.",
+  "hu": "Világszerte nyúzzák."
+ },
+ {
+  "where": "Portfólió – statisztika",
+  "kind": "1. – piros sor",
+  "source": "span.portfolio-stat-line--accent",
+  "en": "Founded",
+  "hu": "Alapítva"
+ },
+ {
+  "where": "Portfólió – statisztika",
+  "kind": "1. – dátum",
+  "source": "span.portfolio-stat-line",
+  "en": "Aug 2018",
+  "hu": "2018. aug."
+ },
+ {
+  "where": "Portfólió – statisztika",
+  "kind": "2. – felső sor",
+  "source": "span.portfolio-stat-line",
+  "en": "Customers",
+  "hu": "Ügyfelek"
+ },
+ {
+  "where": "Portfólió – statisztika",
+  "kind": "2. – alsó sor",
+  "source": "span.portfolio-stat-line",
+  "en": "Worldwide",
+  "hu": "Világszerte"
+ },
+ {
+  "where": "Portfólió – statisztika",
+  "kind": "3. – felső sor",
+  "source": "span.portfolio-stat-line",
+  "en": "Built for",
+  "hu": "Készült"
+ },
+ {
+  "where": "Portfólió – statisztika",
+  "kind": "3. – alsó sor (máshol a WordPress marad WordPress)",
+  "source": "span.portfolio-stat-line",
+  "in": "span.portfolio-stat-line",
+  "en": "WordPress",
+  "hu": "WordPressre"
+ },
+ {
+  "where": "Portfólió",
+  "kind": "Jelölés a továbbiakra",
+  "source": "span.portfolio-more-work-text",
+  "en": "Showcase",
+  "hu": "Lesd meg"
+ },
+
+ {
+  "where": "WPKoi",
+  "kind": "Szekció, képernyőolvasónak",
+  "source": "section#wpkoi[aria-label]",
+  "en": "WPKoi — selected screens from the site",
+  "hu": "WPKoi — válogatott képernyők az oldalról"
+ },
+ {
+  "where": "WPKoi",
+  "kind": "Cím, 1. sor",
+  "source": "span.wpkoi-title-line--light",
+  "en": "It Took",
+  "hu": "Ezen"
+ },
+ {
+  "where": "WPKoi",
+  "kind": "Cím, 2. sor (piros)",
+  "source": "span.wpkoi-title-line--accent",
+  "en": "My Time.",
+  "hu": "Megedződtem."
+ },
+ {
+  "where": "WPKoi",
+  "kind": "Gomb",
+  "source": "span.wpkoi-visit-text",
+  "en": "Enter WPKoi",
+  "hu": "Irány a WPKoi"
+ },
+ {
+  "where": "WPKoi",
+  "kind": "Görgetés-jelzés",
+  "source": "p.wpkoi-scroll-hint span",
+  "en": "Scroll",
+  "hu": "Görgess"
+ },
+ {
+  "where": "WPKoi – galéria",
+  "kind": "1. kép leírása",
+  "source": "img.wpkoi-media-inner[alt]",
+  "en": "WPKoi home page — WebGL hero with the theme wall behind it",
+  "hu": "A WPKoi főoldala — WebGL hero, mögötte a témafal"
+ },
+ {
+  "where": "WPKoi – galéria",
+  "kind": "2. kép leírása",
+  "source": "img.wpkoi-media-inner[alt]",
+  "en": "WPKoi themes catalog — Martanda, Lalita, Prakata and more",
+  "hu": "WPKoi témakatalógus — Martanda, Lalita, Prakata és a többi"
+ },
+ {
+  "where": "WPKoi – galéria",
+  "kind": "3. (videó) rejtett felirata",
+  "source": "figcaption span.visually-hidden",
+  "en": "&mdash; WPKoi site in motion",
+  "hu": "&mdash; a WPKoi oldal mozgásban"
+ },
+ {
+  "where": "WPKoi – galéria",
+  "kind": "4. kép leírása",
+  "source": "img.wpkoi-media-inner[alt]",
+  "en": "WPKoi themes browsed by color category",
+  "hu": "WPKoi témák színkategória szerint böngészve"
+ },
+ {
+  "where": "WPKoi – galéria",
+  "kind": "5. (videó) rejtett felirata",
+  "source": "figcaption span.visually-hidden",
+  "en": "&mdash; WPKoi site interactions",
+  "hu": "&mdash; a WPKoi oldal interakciói"
+ },
+ {
+  "where": "WPKoi – idővonal",
+  "kind": "1. – szerep",
+  "source": "p.wpkoi-timeline-role",
+  "en": "WordPress Block Theme Developer",
+  "hu": "WordPress block téma fejlesztő"
+ },
+ {
+  "where": "WPKoi – idővonal",
+  "kind": "2. – szerep",
+  "source": "p.wpkoi-timeline-role",
+  "en": "WordPress Theme Developer",
+  "hu": "WordPress téma fejlesztő"
+ },
+ {
+  "where": "WPKoi – idővonal",
+  "kind": "3. – cím",
+  "source": "h3.wpkoi-timeline-title",
+  "en": "Freelance Works",
+  "hu": "Szabadúszó munkák"
+ },
+ {
+  "where": "WPKoi – idővonal",
+  "kind": "3. – szerep",
+  "source": "p.wpkoi-timeline-role",
+  "en": "Web Development &amp; Client Projects",
+  "hu": "Webfejlesztés &amp; ügyfélprojektek"
+ },
+ {
+  "where": "WPKoi – idővonal",
+  "kind": "4. – cím",
+  "source": "h3.wpkoi-timeline-title",
+  "en": "Filmmaker",
+  "hu": "Filmkészítő"
+ },
+ {
+  "where": "WPKoi – idővonal",
+  "kind": "4. – szerep",
+  "source": "p.wpkoi-timeline-role",
+  "en": "Video Editing",
+  "hu": "Videóvágás"
+ },
+ {
+  "where": "WPKoi",
+  "kind": "Gomb a LinkedInre",
+  "source": "span.wpkoi-visit-text",
+  "en": "View Full Experience",
+  "hu": "Teljes Tapasztalat"
+ },
+
+ {
+  "where": "Díjak",
+  "kind": "Főcím, 1. sor",
+  "source": "span.awards-heading-line--light",
+  "en": "I Wanted To Know",
+  "hu": "Kíváncsi voltam,"
+ },
+ {
+  "where": "Díjak",
+  "kind": "Főcím, 2. sor (piros)",
+  "source": "span.awards-heading-line--accent",
+  "en": "How Far&hellip;",
+  "hu": "Mit érek&hellip;"
+ },
+ {
+  "where": "Díjak",
+  "kind": "Kézírásos alcím",
+  "source": "span.awards-subheading-text",
+  "en": "Worth the try",
+  "hu": "Megérte megpróbálni"
+ },
+ {
+  "where": "Díjak",
+  "kind": "A lista címe",
+  "source": "p.awards-credits-title",
+  "en": "Selected Recognitions",
+  "hu": "Válogatott Elismerések"
+ },
+ {
+  "where": "Díjak",
+  "kind": "A lista, képernyőolvasónak",
+  "source": "ul.awards-list[aria-label]",
+  "en": "Awards and nominations",
+  "hu": "Díjak és jelölések"
+ },
+ {
+  "where": "Díjak – oklevelek",
+  "kind": "1. oklevél, képernyőolvasónak",
+  "source": "a.awards-card[aria-label]",
+  "en": "CSS Design Awards — Special Kudos for WPKoi WordPress Themes",
+  "hu": "CSS Design Awards — Special Kudos a WPKoi WordPress témákért"
+ },
+ {
+  "where": "Díjak – oklevelek",
+  "kind": "2. oklevél, képernyőolvasónak",
+  "source": "a.awards-card[aria-label]",
+  "en": "CSS Design Awards — Innovation Public Award for WPKoi WordPress Themes",
+  "hu": "CSS Design Awards — Innovation Public Award a WPKoi WordPress témákért"
+ },
+ {
+  "where": "Díjak – oklevelek",
+  "kind": "3. oklevél, képernyőolvasónak",
+  "source": "a.awards-card[aria-label]",
+  "en": "CSS Design Awards — UI Public Award for WPKoi WordPress Themes",
+  "hu": "CSS Design Awards — UI Public Award a WPKoi WordPress témákért"
+ },
+ {
+  "where": "Díjak – oklevelek",
+  "kind": "4. oklevél, képernyőolvasónak",
+  "source": "a.awards-card[aria-label]",
+  "en": "CSS Design Awards — UX Public Award for WPKoi WordPress Themes",
+  "hu": "CSS Design Awards — UX Public Award a WPKoi WordPress témákért"
+ },
+ {
+  "where": "Díjak – oklevelek",
+  "kind": "5. oklevél, képernyőolvasónak",
+  "source": "a.awards-card[aria-label]",
+  "en": "CSSWinner — Site of the Day, danielkiss.hu",
+  "hu": "CSSWinner — A nap oldala, danielkiss.hu"
+ },
+ {
+  "where": "Díjak – oklevelek",
+  "kind": "6. oklevél, képernyőolvasónak",
+  "source": "a.awards-card[aria-label]",
+  "en": "Design Nominees — Site of the Day, danielkiss.hu",
+  "hu": "Design Nominees — A nap oldala, danielkiss.hu"
+ },
+ {
+  "where": "Díjak – oklevelek",
+  "kind": "7. oklevél, képernyőolvasónak",
+  "source": "a.awards-card[aria-label]",
+  "en": "Design Nominees — Theme of the Day for the Hrasva WordPress theme",
+  "hu": "Design Nominees — A nap témája, Hrasva WordPress téma"
+ },
+ {
+  "where": "Díjak – oklevelek",
+  "kind": "8. oklevél, képernyőolvasónak",
+  "source": "a.awards-card[aria-label]",
+  "en": "Design Nominees — Theme of the Day for the Lovebird WordPress theme",
+  "hu": "Design Nominees — A nap témája, Lovebird WordPress téma"
+ },
+ {
+  "where": "Díjak – oklevelek",
+  "kind": "9. oklevél, képernyőolvasónak",
+  "source": "a.awards-card[aria-label]",
+  "en": "CSS Nectar — Site of the Day, WPKoi WordPress Themes",
+  "hu": "CSS Nectar — A nap oldala, WPKoi WordPress témák"
+ },
+
+ {
+  "where": "Átvezető",
+  "kind": "1. sor",
+  "source": "span.transition-line--light",
+  "en": "So&hellip; Would You Make",
+  "hu": "Na&hellip; Összerakunk"
+ },
+ {
+  "where": "Átvezető",
+  "kind": "2. sor (piros)",
+  "source": "span.transition-line--accent",
+  "en": "Something Weird Together?",
+  "hu": "Valami egyedit közösen?"
+ },
+
+ {
+  "where": "Kapcsolat",
+  "kind": "Főcím, 1. sor (piros)",
+  "source": "span.contact-heading-line--accent",
+  "en": "Bug Me",
+  "hu": "Piszkálj"
+ },
+ {
+  "where": "Kapcsolat",
+  "kind": "Főcím, 2. sor",
+  "source": "span.contact-heading-line--light",
+  "en": "With Your Idea",
+  "hu": "Az ötleteddel"
+ },
+ {
+  "where": "Kapcsolat",
+  "kind": "Elérhetőség",
+  "source": "p.contact-availability",
+  "en": "Available for selected projects",
+  "hu": "Van amire rá tudsz venni..."
+ },
+ {
+  "where": "Kapcsolat",
+  "kind": "Kézírásos jel a húzható mezőn",
+  "source": "p.contact-drag span",
+  "en": "Drag me",
+  "hu": "Ragadd meg"
+ },
+ {
+  "where": "Kapcsolat",
+  "kind": "Gomb",
+  "source": "button.contact-top",
+  "en": "Scroll to top",
+  "hu": "Vissza a tetejére"
+ },
+
+ {
+  "where": "Szkriptből",
+  "kind": "Menügomb, képernyőolvasónak (zárva)",
+  "source": "src/ui/mobileMenu.js",
+  "en": "Open menu",
+  "hu": "Menü megnyitása"
+ },
+ {
+  "where": "Szkriptből",
+  "kind": "Menügomb, képernyőolvasónak (nyitva)",
+  "source": "src/ui/mobileMenu.js",
+  "en": "Close menu",
+  "hu": "Menü bezárása"
+ },
+ {
+  "where": "Szkriptből",
+  "kind": "Menügomb felirata (zárva)",
+  "source": "src/ui/mobileMenu.js",
+  "en": "MENU",
+  "hu": "MENÜ"
+ },
+ {
+  "where": "Szkriptből",
+  "kind": "Menügomb felirata (nyitva)",
+  "source": "src/ui/mobileMenu.js",
+  "en": "CLOSE",
+  "hu": "BEZÁR"
+ },
+ {
+  "where": "Szkriptből",
+  "kind": "A galéria rejtett linkjei: „{téma neve} — …”",
+  "source": "src/sections/portfolio.js",
+  "en": "WordPress theme demo",
+  "hu": "WordPress téma demó"
+ }
+]

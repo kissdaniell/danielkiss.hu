@@ -27,6 +27,7 @@ import { initLiquidRetire } from './ui/liquidRetire.js';
 import { initDeferredMedia } from './ui/deferredMedia.js';
 import { initMobileMenu } from './ui/mobileMenu.js';
 import { initPortraitHero } from './ui/portraitHero.js';
+import { initStackYear } from './ui/stackYear.js';
 import { initPreloader } from './ui/preloader.js';
 import { initDebug, debugOff } from './utils/debug.js';
 import { fixSplitAria } from './utils/splitAria.js';
@@ -146,6 +147,9 @@ initDeferredMedia();
 initMobileMenu();
 // The upright opening frame — its own markup, rendered only below 4:3.
 initPortraitHero();
+// Before the opening frame is measured: the stack's year is one of the
+// things heroTransition.js flips, and this is what decides what it says.
+initStackYear();
 
 // After the sections, because there is nothing to correct until they have
 // split something. Every split on this page is gated on document.fonts.load()

@@ -51,9 +51,31 @@ function stripHtmlComments() {
   };
 }
 
+// The Hungarian page lives in hu/index.html. Apache sends /hu to /hu/ by
+// itself; the dev and preview servers would answer it with a 404, so they
+// redirect too.
+function huSlash() {
+  // (In braces: a function returned from these hooks would be run by Vite
+  // as a late hook of its own.)
+  const use = (server) => {
+    server.middlewares.use((req, res, next) => {
+      if (req.url !== '/hu') return next();
+      res.statusCode = 301;
+      res.setHeader('Location', '/hu/');
+      res.end();
+    });
+  };
+  return { name: 'hu-slash', configureServer: use, configurePreviewServer: use };
+}
+
 export default defineConfig({
-  plugins: [stripHtmlComments()],
+  plugins: [stripHtmlComments(), huSlash()],
   build: {
+    // Two documents, one module graph: both pages load /src/main.js, so they
+    // end up sharing the one entry chunk rather than each getting a copy.
+    // hu/index.html is written by tools/i18n/build-hu.mjs, which npm runs
+    // before vite — it is an input here, never a file to edit.
+    rollupOptions: { input: { main: 'index.html', hu: 'hu/index.html' } },
     // Reported per chunk on every build, which is the only way a regression
     // here gets noticed before a Lighthouse run does.
     reportCompressedSize: true,

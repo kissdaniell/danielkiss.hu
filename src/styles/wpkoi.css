@@ -422,6 +422,7 @@
   line-height: 1.1;
   letter-spacing: 0.01em;
   color: var(--color-light);
+  font-weight: 400;
 }
 
 /* Sized so the longest role holds one line in its own column — the four

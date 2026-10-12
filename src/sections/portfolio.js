@@ -3,6 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 
 import '../styles/portfolio.css';
+import { t } from '../i18n.js';
 import { initGalleryMarquee } from '../canvas/galleryMarquee.js';
 import { dpx, onViewportResize } from '../utils/viewport.js';
 import { liveGlitchLoop, liveJitter } from '../utils/motion.js';
@@ -83,7 +84,7 @@ export function initPortfolio() {
       a.href = item.href;
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
-      a.textContent = `${item.name} — WordPress theme demo`;
+      a.textContent = `${item.name} — ${t('WordPress theme demo')}`;
       li.appendChild(a);
       galleryLinks.appendChild(li);
     });
