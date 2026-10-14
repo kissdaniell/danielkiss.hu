@@ -193,17 +193,39 @@
   color: var(--color-light);
 }
 
+/* Eleven names in two columns, six and five.
+   ---------------------------------------------------------------
+   One column of eleven would reach a third of the way down the orbit, through
+   the flank of the arc the certificates climb. Two shorter columns keep the
+   block in the corner where the ring is already dissolving into the page.
+
+   The row count is written here rather than a column count, and that is what
+   makes the split exact: `grid-auto-flow: column` fills six rows and then
+   starts the next column, so the first six names are the first column and
+   whatever is left is the second. A `column-count` would leave the browser to
+   balance it, which is nearly the same answer and not reliably the same one.
+
+   It is also the one number that has to be told when an award is added: six
+   rows for eleven names, seven for thirteen. The markup stays a single flat
+   list in the order the ring runs — see the note on it in index.html. */
 .awards-list {
   margin: 0;
   padding: 0;
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  /* Each name only as wide as itself, rather than stretched to the longest
-     one. Nothing moves — the names are left-aligned and never wrap — but it
-     makes the line and its link the same box, so the hover below cannot be
-     picked up by the empty run of column to the right of a short name. */
-  align-items: flex-start;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(6, auto);
+  /* Each name only as wide as itself, rather than stretched to its column.
+     Nothing moves — the names are left-aligned and never wrap — but it makes
+     the line and its link the same box, so the hover below cannot be picked
+     up by the empty run of column to the right of a short name. */
+  justify-items: start;
+  /* Wide enough that the two columns read as two lists rather than as one
+     list that has been broken. Set against the longest name in the left
+     column, which is also the one that leaves the least room: at a tighter
+     gap than this the parenthesis ending that line and the next column's
+     first word run together. */
+  column-gap: 2rem;
   font-family: var(--font-secondary);
   font-weight: 400;
   text-transform: uppercase;
@@ -359,8 +381,15 @@
     font-size: max(0.95rem, calc(0.72 * var(--ui)));
   }
 
+  /* ...and back to one column of eleven.
+     The names are set to be read here, which makes each one about two thirds
+     the width of the whole orbit — two of them side by side would be wider
+     than the box they sit in. Upright the room is the other way round: the
+     orbit is tall, so the list can be. */
   .awards-list {
     font-size: max(1rem, calc(0.78 * var(--ui)));
+    grid-auto-flow: row;
+    grid-template-rows: none;
   }
 
   /* ---- ...and the arc gets out from under them.

@@ -170,22 +170,24 @@ poszterbetű, ahol egy-két karakternyi eltérés is látszik a tördelésen.
 
 | Sor | Hol | Angol | Magyar | Megjegyzés |
 |---|---|---|---|---|
-| 917 | főcím 1. sor | I Wanted To Know | Kíváncsi voltam, | |
-| 919 | főcím 2. sor (piros) | How Far… | Mit érek… | |
-| 927 | kézírásos alcím | Worth the try | Megérte megpróbálni | alt: `Megérte` |
-| 933 | lista címe | Selected Recognitions | Válogatott Elismerések | |
-| 934 | lista `aria-label` | Awards and nominations | Díjak és jelölések | |
-| 936–976 | a 9 díj neve | CSSDA Special Kudos (WPKoi) … CSS Nectar SOTD (WPKoi) | — | a díjak hivatalos nevei, maradnak |
-| 984 | oklevél 1 `aria-label` | CSS Design Awards — Special Kudos for WPKoi WordPress Themes | CSS Design Awards — Special Kudos a WPKoi WordPress témákért | |
-| 1011 | oklevél 2 `aria-label` | CSS Design Awards — Innovation Public Award for WPKoi WordPress Themes | CSS Design Awards — Innovation Public Award a WPKoi WordPress témákért | |
-| 1038 | oklevél 3 `aria-label` | CSS Design Awards — UI Public Award for WPKoi WordPress Themes | CSS Design Awards — UI Public Award a WPKoi WordPress témákért | |
-| 1065 | oklevél 4 `aria-label` | CSS Design Awards — UX Public Award for WPKoi WordPress Themes | CSS Design Awards — UX Public Award a WPKoi WordPress témákért | |
-| 1092 | oklevél 5 `aria-label` | CSSWinner — Site of the Day, danielkiss.hu | CSSWinner — A nap oldala, danielkiss.hu | |
-| 1119 | oklevél 6 `aria-label` | Design Nominees — Site of the Day, danielkiss.hu | Design Nominees — A nap oldala, danielkiss.hu | |
-| 1146 | oklevél 7 `aria-label` | Design Nominees — Theme of the Day for the Hrasva WordPress theme | Design Nominees — A nap témája, Hrasva WordPress téma | |
-| 1173 | oklevél 8 `aria-label` | Design Nominees — Theme of the Day for the Lovebird WordPress theme | Design Nominees — A nap témája, Lovebird WordPress téma | |
-| 1200 | oklevél 9 `aria-label` | CSS Nectar — Site of the Day, WPKoi WordPress Themes | CSS Nectar — A nap oldala, WPKoi WordPress témák | |
-| 1229 | kézírásos jelvény | Awards | Díjak | |
+| 936 | főcím 1. sor | I Wanted To Know | Kíváncsi voltam, | |
+| 938 | főcím 2. sor (piros) | How Far… | Mit érek… | |
+| 946 | kézírásos alcím | Worth the try | Megérte megpróbálni | alt: `Megérte` |
+| 952 | lista címe | Selected Recognitions | Válogatott Elismerések | |
+| 959 | lista `aria-label` | Awards and nominations | Díjak és jelölések | |
+| 960–1021 | a 11 díj neve | Awwwards Honorable Mention (danielkiss.hu) … CSS Nectar SOTD (WPKoi) | — | a díjak hivatalos nevei, maradnak; a stíluslap két oszlopba töri őket (6 + 5), portré módban egybe |
+| 1024 | oklevél 1 `aria-label` | Awwwards — Honorable Mention, danielkiss.hu | *(marad)* | a díj saját neve |
+| 1051 | oklevél 2 `aria-label` | CSS Design Awards — Special Kudos for WPKoi WordPress Themes | CSS Design Awards — Special Kudos a WPKoi WordPress témákért | |
+| 1078 | oklevél 3 `aria-label` | CSS Design Awards — Innovation Public Award for WPKoi WordPress Themes | CSS Design Awards — Innovation Public Award a WPKoi WordPress témákért | |
+| 1105 | oklevél 4 `aria-label` | CSS Design Awards — UI Public Award for WPKoi WordPress Themes | CSS Design Awards — UI Public Award a WPKoi WordPress témákért | |
+| 1132 | oklevél 5 `aria-label` | CSS Design Awards — UX Public Award for WPKoi WordPress Themes | CSS Design Awards — UX Public Award a WPKoi WordPress témákért | |
+| 1159 | oklevél 6 `aria-label` | CSSWinner — Site of the Day, danielkiss.hu | CSSWinner — A nap oldala, danielkiss.hu | |
+| 1187 | oklevél 7 `aria-label` | CSSWinner — Star, tiralechat.hu | *(marad)* | a díj saját neve |
+| 1214 | oklevél 8 `aria-label` | Design Nominees — Site of the Day, danielkiss.hu | Design Nominees — A nap oldala, danielkiss.hu | |
+| 1241 | oklevél 9 `aria-label` | Design Nominees — Theme of the Day for the Hrasva WordPress theme | Design Nominees — A nap témája, Hrasva WordPress téma | |
+| 1268 | oklevél 10 `aria-label` | Design Nominees — Theme of the Day for the Lovebird WordPress theme | Design Nominees — A nap témája, Lovebird WordPress téma | |
+| 1295 | oklevél 11 `aria-label` | CSS Nectar — Site of the Day, WPKoi WordPress Themes | CSS Nectar — A nap oldala, WPKoi WordPress témák | |
+| 1319 | kézírásos jelvény | Awards | Díjak | |
 
 ## J. Átvezető
 

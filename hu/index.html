@@ -951,7 +951,18 @@
           <div class="awards-orbit">
             <div class="awards-credits">
               <p class="awards-credits-title">Válogatott Elismerések</p>
+              <!-- Two columns of names, 6 and 5: the order here is the order
+                   the certificates ride the ring in, and awards.js lights the
+                   line whose certificate is passing the top of the arc by its
+                   position in this list. The columns are the stylesheet's doing
+                   (grid-template-rows on .awards-list), so the markup stays one
+                   flat list in the order the ring runs. -->
               <ul class="awards-list" aria-label="Díjak és jelölések">
+                <li>
+                  <a href="https://www.awwwards.com/sites/daniel-kiss-portfolio" target="_blank" rel="noopener noreferrer">
+                    Awwwards Honorable Mention (danielkiss.hu)
+                  </a>
+                </li>
                 <li>
                   <a href="https://www.cssdesignawards.com/sites/wpkoi-wordpress-themes/49813/" target="_blank" rel="noopener noreferrer">
                     CSSDA Special Kudos (WPKoi)
@@ -978,6 +989,11 @@
                   </a>
                 </li>
                 <li>
+                  <a href="https://www.csswinner.com/details/tira-le-chat/19455" target="_blank" rel="noopener noreferrer">
+                    CSSWinner STAR (tiralechat.hu)
+                  </a>
+                </li>
+                <li>
                   <a href="https://www.designnominees.com/sites/daniel-kiss-creative-web-development" target="_blank" rel="noopener noreferrer">
                     Design Nominees SOTD (danielkiss.hu)
                   </a>
@@ -1001,6 +1017,33 @@
             </div>
 
             <div class="awards-ring">
+              <a
+                class="awards-card"
+                href="https://www.awwwards.com/sites/daniel-kiss-portfolio"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Awwwards — Honorable Mention, danielkiss.hu"
+              >
+                <img
+                  src="/img/awards/award-11-480.webp"
+                  srcset="
+                    /img/awards/award-11-240.webp 240w,
+                    /img/awards/award-11-340.webp 340w,
+                    /img/awards/award-11-480.webp 480w,
+                    /img/awards/award-11-680.webp 680w,
+                    /img/awards/award-11-960.webp 960w
+                  "
+                  sizes="min(15vw, 32.2vh)"
+                  width="2480"
+                  height="3508"
+                  class="awards-card-image"
+                  alt=""
+                  draggable="false"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
+
               <a
                 class="awards-card"
                 href="https://www.cssdesignawards.com/sites/wpkoi-wordpress-themes/49813/"
@@ -1124,6 +1167,34 @@
                     /img/awards/award-10-480.webp 480w,
                     /img/awards/award-10-680.webp 680w,
                     /img/awards/award-10-960.webp 960w
+                  "
+                  sizes="min(15vw, 32.2vh)"
+                  width="2480"
+                  height="3508"
+                  class="awards-card-image"
+                  alt=""
+                  draggable="false"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
+
+              <!-- award-7 is a stand-in: this one's own certificate has not arrived yet. -->
+              <a
+                class="awards-card"
+                href="https://www.csswinner.com/details/tira-le-chat/19455"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="CSSWinner — Star, tiralechat.hu"
+              >
+                <img
+                  src="/img/awards/award-7-480.webp"
+                  srcset="
+                    /img/awards/award-7-240.webp 240w,
+                    /img/awards/award-7-340.webp 340w,
+                    /img/awards/award-7-480.webp 480w,
+                    /img/awards/award-7-680.webp 680w,
+                    /img/awards/award-7-960.webp 960w
                   "
                   sizes="min(15vw, 32.2vh)"
                   width="2480"

@@ -664,63 +664,77 @@
  },
  {
   "where": "Díjak – oklevelek",
-  "kind": "1. oklevél, képernyőolvasónak",
+  "kind": "1. oklevél, képernyőolvasónak — a díj saját neve, marad angolul",
+  "source": "a.awards-card[aria-label]",
+  "en": "Awwwards — Honorable Mention, danielkiss.hu",
+  "hu": "Awwwards — Honorable Mention, danielkiss.hu"
+ },
+ {
+  "where": "Díjak – oklevelek",
+  "kind": "2. oklevél, képernyőolvasónak",
   "source": "a.awards-card[aria-label]",
   "en": "CSS Design Awards — Special Kudos for WPKoi WordPress Themes",
   "hu": "CSS Design Awards — Special Kudos a WPKoi WordPress témákért"
  },
  {
   "where": "Díjak – oklevelek",
-  "kind": "2. oklevél, képernyőolvasónak",
+  "kind": "3. oklevél, képernyőolvasónak",
   "source": "a.awards-card[aria-label]",
   "en": "CSS Design Awards — Innovation Public Award for WPKoi WordPress Themes",
   "hu": "CSS Design Awards — Innovation Public Award a WPKoi WordPress témákért"
  },
  {
   "where": "Díjak – oklevelek",
-  "kind": "3. oklevél, képernyőolvasónak",
+  "kind": "4. oklevél, képernyőolvasónak",
   "source": "a.awards-card[aria-label]",
   "en": "CSS Design Awards — UI Public Award for WPKoi WordPress Themes",
   "hu": "CSS Design Awards — UI Public Award a WPKoi WordPress témákért"
  },
  {
   "where": "Díjak – oklevelek",
-  "kind": "4. oklevél, képernyőolvasónak",
+  "kind": "5. oklevél, képernyőolvasónak",
   "source": "a.awards-card[aria-label]",
   "en": "CSS Design Awards — UX Public Award for WPKoi WordPress Themes",
   "hu": "CSS Design Awards — UX Public Award a WPKoi WordPress témákért"
  },
  {
   "where": "Díjak – oklevelek",
-  "kind": "5. oklevél, képernyőolvasónak",
+  "kind": "6. oklevél, képernyőolvasónak",
   "source": "a.awards-card[aria-label]",
   "en": "CSSWinner — Site of the Day, danielkiss.hu",
   "hu": "CSSWinner — A nap oldala, danielkiss.hu"
  },
  {
   "where": "Díjak – oklevelek",
-  "kind": "6. oklevél, képernyőolvasónak",
+  "kind": "7. oklevél, képernyőolvasónak — a díj saját neve, marad angolul",
+  "source": "a.awards-card[aria-label]",
+  "en": "CSSWinner — Star, tiralechat.hu",
+  "hu": "CSSWinner — Star, tiralechat.hu"
+ },
+ {
+  "where": "Díjak – oklevelek",
+  "kind": "8. oklevél, képernyőolvasónak",
   "source": "a.awards-card[aria-label]",
   "en": "Design Nominees — Site of the Day, danielkiss.hu",
   "hu": "Design Nominees — A nap oldala, danielkiss.hu"
  },
  {
   "where": "Díjak – oklevelek",
-  "kind": "7. oklevél, képernyőolvasónak",
+  "kind": "9. oklevél, képernyőolvasónak",
   "source": "a.awards-card[aria-label]",
   "en": "Design Nominees — Theme of the Day for the Hrasva WordPress theme",
   "hu": "Design Nominees — A nap témája, Hrasva WordPress téma"
  },
  {
   "where": "Díjak – oklevelek",
-  "kind": "8. oklevél, képernyőolvasónak",
+  "kind": "10. oklevél, képernyőolvasónak",
   "source": "a.awards-card[aria-label]",
   "en": "Design Nominees — Theme of the Day for the Lovebird WordPress theme",
   "hu": "Design Nominees — A nap témája, Lovebird WordPress téma"
  },
  {
   "where": "Díjak – oklevelek",
-  "kind": "9. oklevél, képernyőolvasónak",
+  "kind": "11. oklevél, képernyőolvasónak",
   "source": "a.awards-card[aria-label]",
   "en": "CSS Nectar — Site of the Day, WPKoi WordPress Themes",
   "hu": "CSS Nectar — A nap oldala, WPKoi WordPress témák"
